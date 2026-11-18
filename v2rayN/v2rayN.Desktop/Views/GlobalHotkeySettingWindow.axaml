@@ -1,0 +1,168 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.GlobalHotkeySettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuGlobalHotkeySetting}"
+    Width="720"
+    Height="540"
+    MinWidth="640"
+    MinHeight="480"
+    x:DataType="vms:GlobalHotkeySettingViewModel"
+    Design.DataContext="{x:Static dd:DesignData.GlobalHotkeySetting}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconBolt}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.menuGlobalHotkeySetting}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Work with ArON without leaving your current app." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Global" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button
+                        x:Name="btnReset"
+                        Width="104"
+                        Classes="Ghost"
+                        Content="{x:Static resx:ResUI.TbReset}" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="14,0,0,0"
+                        VerticalAlignment="Center"
+                        Classes="PageSubtitle"
+                        Text="Registered while ArON runs."
+                        TextTrimming="CharacterEllipsis" />
+                    <StackPanel
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="132"
+                            Classes="Primary"
+                            Content="Save shortcuts"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,10,10,4" Spacing="0">
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="SHORTCUTS" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="200,200">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbDisplayGUI}" />
+                                <TextBox
+                                    x:Name="txtGlobalHotkey0"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    PlaceholderText="Press a key combination" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="200,200">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbClearSystemProxy}" />
+                                <TextBox
+                                    x:Name="txtGlobalHotkey1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    PlaceholderText="Press a key combination" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="200,200">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbSetSystemProxy}" />
+                                <TextBox
+                                    x:Name="txtGlobalHotkey2"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    PlaceholderText="Press a key combination" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="200,200">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbNotChangeSystemProxy}" />
+                                <TextBox
+                                    x:Name="txtGlobalHotkey3"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    PlaceholderText="Press a key combination" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="200,200">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbSystemProxyPac}" />
+                                <TextBox
+                                    x:Name="txtGlobalHotkey4"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    PlaceholderText="Press a key combination" />
+                            </Grid>
+
+                            <TextBlock
+                                Margin="0,6,16,0"
+                                Classes="FieldHint"
+                                Text="Click a field, then press the combination you want to assign. Changes stay in this session until you save."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

@@ -1,0 +1,156 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.MsgView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Design.DataContext="{x:Static dd:DesignData.Msg}"
+    mc:Ignorable="d">
+    <DockPanel Margin="0,2,0,0">
+        <StackPanel
+            Margin="0,0,0,10"
+            DockPanel.Dock="Top"
+            Spacing="10">
+            <TextBox
+                x:Name="cmbMsgFilter"
+                Height="34"
+                VerticalContentAlignment="Center"
+                Background="{DynamicResource GlassChipBrush}"
+                BorderBrush="{DynamicResource GlassBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="10"
+                PlaceholderText="Filter logs (regex)">
+                <TextBox.InnerLeftContent>
+                    <PathIcon
+                        Width="14"
+                        Height="14"
+                        Data="{StaticResource SemiIconSearchStroked}"
+                        Foreground="{DynamicResource GlassThemeIconBrush}" />
+                </TextBox.InnerLeftContent>
+            </TextBox>
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button
+                        x:Name="btnCopy"
+                        Classes="IconButton ToolGlass"
+                        Click="menuMsgViewCopyAll_Click"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuMsgViewCopyAll}">
+                        <PathIcon Data="{StaticResource SemiIconCopy}" />
+                    </Button>
+                    <Button
+                        x:Name="btnClear"
+                        Classes="IconButton ToolGlass Danger"
+                        Click="menuMsgViewClear_Click"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuMsgViewClear}">
+                        <PathIcon Data="{StaticResource SemiIconDelete}" />
+                    </Button>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                            Text="{x:Static resx:ResUI.TbAutoRefresh}" />
+                        <ToggleSwitch
+                            x:Name="togAutoRefresh"
+                            HorizontalAlignment="Left"
+                            IsChecked="True"
+                            Theme="{DynamicResource SimpleToggleSwitch}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                            Text="{x:Static resx:ResUI.TbAutoScrollToEnd}" />
+                        <ToggleSwitch
+                            x:Name="togScrollToEnd"
+                            HorizontalAlignment="Left"
+                            IsChecked="True"
+                            Theme="{DynamicResource SimpleToggleSwitch}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <Border Classes="GlassInset" ClipToBounds="True" CornerRadius="14">
+            <Grid>
+                <avaloniaEdit:TextEditor
+                    Name="txtMsg"
+                    Margin="10,8"
+                    Background="Transparent"
+                    FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+                    FontSize="11.5"
+                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                    IsReadOnly="True"
+                    VerticalScrollBarVisibility="Auto"
+                    WordWrap="True">
+                    <avaloniaEdit:TextEditor.Options>
+                        <avaloniaEdit:TextEditorOptions AllowScrollBelowDocument="False" />
+                    </avaloniaEdit:TextEditor.Options>
+                    <avaloniaEdit:TextEditor.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuItem
+                                x:Name="menuMsgViewSelectAll"
+                                Click="menuMsgViewSelectAll_Click"
+                                Header="{x:Static resx:ResUI.menuMsgViewSelectAll}"
+                                InputGesture="Ctrl+A" />
+                            <MenuItem
+                                x:Name="menuMsgViewCopy"
+                                Click="menuMsgViewCopy_Click"
+                                Header="{x:Static resx:ResUI.menuMsgViewCopy}"
+                                InputGesture="Ctrl+C" />
+                            <MenuItem
+                                x:Name="menuMsgViewCopyAll"
+                                Click="menuMsgViewCopyAll_Click"
+                                Header="{x:Static resx:ResUI.menuMsgViewCopyAll}" />
+                            <MenuItem
+                                x:Name="menuMsgViewClear"
+                                Click="menuMsgViewClear_Click"
+                                Header="{x:Static resx:ResUI.menuMsgViewClear}" />
+                        </MenuFlyout>
+                    </avaloniaEdit:TextEditor.ContextFlyout>
+                </avaloniaEdit:TextEditor>
+                <StackPanel
+                    x:Name="emptyLogsPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False"
+                    Spacing="4">
+                    <Path
+                        Width="64"
+                        Height="30"
+                        Margin="0,0,0,6"
+                        HorizontalAlignment="Center"
+                        Data="{StaticResource ArONMarkGeometry}"
+                        Fill="{DynamicResource ArONBrandBrush}"
+                        Opacity="0.65"
+                        Stretch="Uniform" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="13.5"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                        Text="No activity yet" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="11.5"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="Connection and system events will appear here." />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DockPanel>
+</UserControl>

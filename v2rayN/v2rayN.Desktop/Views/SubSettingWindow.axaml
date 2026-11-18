@@ -1,0 +1,248 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.SubSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:automation="using:Avalonia.Automation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuSubSetting}"
+    Width="920"
+    Height="600"
+    MinWidth="840"
+    MinHeight="440"
+    x:DataType="vms:SubSettingViewModel"
+    Design.DataContext="{x:Static dd:DesignData.SubSetting}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Window.KeyBindings>
+        <KeyBinding Command="{Binding SubAddCmd}" Gesture="Ctrl+N" />
+        <KeyBinding Command="{Binding SubEditCmd}" Gesture="F2" />
+    </Window.KeyBindings>
+
+    <dialogHost:DialogHost
+        CloseOnClickAway="True"
+        DisableOpeningAnimation="True"
+        Identifier="dialogHostSub">
+        <Border
+            Margin="12"
+            Classes="WindowShell"
+            ClipToBounds="True">
+            <DockPanel>
+                <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                    <DockPanel>
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            Spacing="4">
+                            <Button
+                                x:Name="menuSubAdd"
+                                automation:AutomationProperties.Name="{x:Static resx:ResUI.menuSubAdd}"
+                                Classes="IconButton ToolGlass"
+                                ToolTip.Tip="{x:Static resx:ResUI.menuSubAdd}">
+                                <PathIcon Data="{StaticResource SemiIconPlus}" />
+                            </Button>
+                            <Button
+                                x:Name="menuSubEdit"
+                                automation:AutomationProperties.Name="{x:Static resx:ResUI.menuSubEdit}"
+                                Classes="IconButton ToolGlass"
+                                ToolTip.Tip="{x:Static resx:ResUI.menuSubEdit}">
+                                <PathIcon Data="{StaticResource SemiIconEdit}" />
+                            </Button>
+                            <Button
+                                x:Name="menuSubDelete"
+                                automation:AutomationProperties.Name="{x:Static resx:ResUI.menuSubDelete}"
+                                Classes="IconButton ToolGlass Danger"
+                                ToolTip.Tip="{x:Static resx:ResUI.menuSubDelete}">
+                                <PathIcon Data="{StaticResource SemiIconDelete}" />
+                            </Button>
+                            <Button
+                                x:Name="menuSubShare"
+                                automation:AutomationProperties.Name="{x:Static resx:ResUI.menuSubShare}"
+                                Classes="IconButton ToolGlass"
+                                ToolTip.Tip="{x:Static resx:ResUI.menuSubShare}">
+                                <PathIcon Data="{StaticResource SemiIconShare}" />
+                            </Button>
+                            <Border
+                                Width="1"
+                                Height="18"
+                                Margin="6,0"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource GlassHairlineBrush}" />
+                            <Button
+                                x:Name="menuClose"
+                                automation:AutomationProperties.Name="{x:Static resx:ResUI.menuClose}"
+                                Classes="IconButton ToolGlass"
+                                ToolTip.Tip="{x:Static resx:ResUI.menuClose}">
+                                <PathIcon Data="{StaticResource SemiIconClose}" />
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="10">
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource SemiIconCloudStroked}"
+                                Foreground="{DynamicResource GlassThemeIconBrush}" />
+                            <TextBlock
+                                Classes="WindowTitle"
+                                Text="{x:Static resx:ResUI.menuSubSetting}" />
+                            <Border Classes="CountPill">
+                                <TextBlock
+                                    FontSize="10.5"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Text="{Binding SubCount}" />
+                            </Border>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <DockPanel
+                    Margin="14,12,14,0"
+                    DockPanel.Dock="Top">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button x:Name="menuSubUpdate" Classes="Soft">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <PathIcon
+                                        Width="14"
+                                        Height="14"
+                                        Data="{StaticResource SemiIconRefresh}" />
+                                    <TextBlock VerticalAlignment="Center" Text="Update selected" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button
+                            x:Name="menuSubUpdateViaProxy"
+                            Classes="Ghost"
+                            Content="Via proxy" />
+                    </StackPanel>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="PageSubtitle"
+                        Text="{Binding SummaryText}" />
+                </DockPanel>
+
+                <TextBlock
+                    Margin="16,8,16,12"
+                    Classes="PageSubtitle"
+                    DockPanel.Dock="Bottom"
+                    Text="Double-click a subscription to edit it. Servers refresh on the interval you set."
+                    TextWrapping="Wrap" />
+
+                <Border
+                    Margin="14,12,14,0"
+                    Padding="2,6,2,2"
+                    Classes="GlassInset"
+                    ClipToBounds="True"
+                    CornerRadius="12">
+                    <Grid>
+                    <DataGrid
+                        x:Name="lstSubscription"
+                        AutoGenerateColumns="False"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CanUserResizeColumns="True"
+                        GridLinesVisibility="None"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        IsVisible="{Binding !BlIsEmpty}"
+                        ItemsSource="{Binding SubItems}"
+                        RowHeight="42">
+                        <DataGrid.KeyBindings>
+                            <KeyBinding Command="{Binding SubDeleteCmd}" Gesture="Delete" />
+                        </DataGrid.KeyBindings>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="menuSubAdd2" Header="{x:Static resx:ResUI.menuSubAdd}" />
+                                <MenuItem x:Name="menuSubDelete2" Header="{x:Static resx:ResUI.menuSubDelete}" />
+                                <MenuItem x:Name="menuSubEdit2" Header="{x:Static resx:ResUI.menuSubEdit}" />
+                                <MenuItem x:Name="menuSubShare2" Header="{x:Static resx:ResUI.menuSubShare}" />
+                                <Separator />
+                                <MenuItem x:Name="menuSubUpdate2" Header="{x:Static resx:ResUI.menuSubGroupUpdate}" />
+                                <MenuItem x:Name="menuSubUpdateViaProxy2" Header="{x:Static resx:ResUI.menuSubGroupUpdateViaProxy}" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="1.3*"
+                                MinWidth="120"
+                                Binding="{Binding Remarks}"
+                                Header="{x:Static resx:ResUI.LvRemarks}" />
+                            <DataGridTextColumn
+                                Width="1.7*"
+                                MinWidth="190"
+                                Binding="{Binding Url}"
+                                Header="{x:Static resx:ResUI.LvUrl}" />
+                            <DataGridCheckBoxColumn
+                                Width="104"
+                                Binding="{Binding Enabled}"
+                                Header="{x:Static resx:ResUI.LvEnabled}" />
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding AutoUpdateInterval}"
+                                Header="{x:Static resx:ResUI.LvAutoUpdateInterval}" />
+                            <DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding UserAgent}"
+                                Header="{x:Static resx:ResUI.LvUserAgent}" />
+                            <DataGridTextColumn
+                                Width="50"
+                                Binding="{Binding Sort}"
+                                Header="{x:Static resx:ResUI.LvSort}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel
+                        MaxWidth="360"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding BlIsEmpty}"
+                        Spacing="5">
+                        <Path
+                            Width="80"
+                            Height="36"
+                            HorizontalAlignment="Center"
+                            Data="{StaticResource ArONMarkGeometry}"
+                            Fill="{DynamicResource GlassThemeIconBrush}"
+                            Stretch="Uniform" />
+                        <TextBlock
+                            Margin="0,12,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                            Text="No subscriptions yet" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                            Text="Add a subscription to pull servers automatically and keep them in sync."
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+                        <Button
+                            x:Name="btnAddSubEmpty"
+                            Margin="0,12,0,0"
+                            HorizontalAlignment="Center"
+                            Classes="Primary"
+                            Content="Add subscription" />
+                    </StackPanel>
+                    </Grid>
+                </Border>
+            </DockPanel>
+        </Border>
+    </dialogHost:DialogHost>
+</Window>

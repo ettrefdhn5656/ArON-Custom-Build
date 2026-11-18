@@ -1,0 +1,206 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.PsiphonSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:v2rayN.Desktop.Converters"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="Psiphon Shirokhorshid Settings"
+    Width="720"
+    Height="620"
+    MinWidth="640"
+    MinHeight="520"
+    x:DataType="vms:PsiphonSettingViewModel"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner">
+
+    <Window.Resources>
+        <conv:EmptyTextConverter x:Key="StrategyTextConverter" />
+    </Window.Resources>
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconGlobeStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="Psiphon Shirokhorshid" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Global defaults for the Psiphon tunnel core." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Global" />
+                        </Border>
+                        <Border
+                            Classes="ActivePill"
+                            IsVisible="{Binding CdnFrontingEnabled}"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="9.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="CDN ON" />
+                        </Border>
+                        <Border
+                            Classes="CountPill"
+                            IsVisible="{Binding !CdnFrontingEnabled}"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="9.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="CDN OFF" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Applies to every Psiphon profile you add." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="132"
+                            Classes="Primary"
+                            Content="Save settings"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,10,10,4" Spacing="0">
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="DEFAULTS" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="180,*">
+                                <TextBlock Classes="FieldLabel" Text="Default egress region" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="Automatic (fastest)"
+                                    ItemsSource="{Binding EgressRegions}"
+                                    SelectedItem="{Binding DefaultEgressRegion}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter='Automatic (fastest)'}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="180,*">
+                                <TextBlock Classes="FieldLabel" Text="Default tunnel pool" />
+                                <NumericUpDown
+                                    Grid.Column="1"
+                                    Width="140"
+                                    HorizontalAlignment="Left"
+                                    Maximum="16"
+                                    Minimum="1"
+                                    Value="{Binding DefaultTunnelPoolSize}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="CDN FRONTING" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="180,*">
+                                <TextBlock Classes="FieldLabel" Text="CDN fronting" />
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="10">
+                                    <ToggleSwitch IsChecked="{Binding CdnFrontingEnabled}" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldHint"
+                                        Text="Probe CDN edges to evade SNI/IP blocks." />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="180,*">
+                                <TextBlock
+                                    VerticalAlignment="Top"
+                                    Classes="FieldLabel"
+                                    Text="CDN edge IPs / CIDRs" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Height="96"
+                                    AcceptsReturn="True"
+                                    PlaceholderText="User-provided edge IPs, CIDRs, or SNI (comma or newline separated)"
+                                    Text="{Binding CdnFrontingEdges}"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="NOTES" />
+                            <TextBlock
+                                Classes="FieldHint"
+                                Text="When enabled, psiphon-tunnel-core probes the supplied CDN edge addresses before establishing the tunnel."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

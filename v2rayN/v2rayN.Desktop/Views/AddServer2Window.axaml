@@ -1,0 +1,238 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.AddServer2Window"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuAddCustomServer}"
+    Width="780"
+    Height="560"
+    MinWidth="700"
+    MinHeight="540"
+    x:DataType="vms:AddServer2ViewModel"
+    Design.DataContext="{x:Static dd:DesignData.AddServer2}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconServerStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock x:Name="txtHeaderTitle" Classes="WindowTitle" Text="{x:Static resx:ResUI.menuAddCustomServer}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Point ArON at a configuration you already have." />
+                        </StackPanel>
+                        <Border x:Name="pillHeader" Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                x:Name="txtHeaderPill"
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Custom core" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Saved to your server list — connect any time." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="132"
+                            Classes="Primary"
+                            Content="Save server"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Margin="10,10,10,4" RowDefinitions="Auto,Auto,Auto">
+
+                    <Border
+                        Grid.Row="0"
+                        Classes="FormCard"
+                        IsVisible="True">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="SOURCE" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="132,*">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbRemarks}" />
+                                <TextBox
+                                    x:Name="txtRemarks"
+                                    Grid.Column="1"
+                                    MaxWidth="460"
+                                    HorizontalAlignment="Left"
+                                    PlaceholderText="Name this configuration" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="132,*,Auto,Auto">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbAddress}" />
+                                <TextBox
+                                    x:Name="txtAddress"
+                                    Grid.Column="1"
+                                    MinWidth="300"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    PlaceholderText="Choose a config file" />
+                                <Button
+                                    x:Name="btnBrowse"
+                                    Grid.Column="2"
+                                    Margin="8,0,0,0"
+                                    Classes="Soft"
+                                    Content="{x:Static resx:ResUI.TbBrowse}" />
+                                <Button
+                                    x:Name="btnEdit"
+                                    Grid.Column="3"
+                                    Margin="8,0,0,0"
+                                    Classes="Ghost"
+                                    Content="{x:Static resx:ResUI.TbEdit}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="132,*">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbCoreType}" />
+                                <ComboBox
+                                    x:Name="cmbCoreType"
+                                    Grid.Column="1"
+                                    Width="240"
+                                    HorizontalAlignment="Left"
+                                    MaxDropDownHeight="1000" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border
+                        x:Name="cardRunBehavior"
+                        Grid.Row="1"
+                        Classes="FormCard"
+                        IsVisible="True">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="RUN BEHAVIOR" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="132,*,Auto">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbDisplayLog}" />
+                                <ToggleSwitch
+                                    x:Name="togDisplayLog"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Left" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    MaxWidth="330"
+                                    VerticalAlignment="Center"
+                                    Classes="FieldHint"
+                                    Text="{x:Static resx:ResUI.TipDisplayLog}" />
+                            </Grid>
+
+                            <Grid
+                                x:Name="gridCustomServer"
+                                Classes="FormRow"
+                                ColumnDefinitions="132,*">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbPreSocksPort}" />
+                                <TextBox
+                                    x:Name="txtPreSocksPort"
+                                    Grid.Column="1"
+                                    Width="180"
+                                    HorizontalAlignment="Left"
+                                    PlaceholderText="Optional" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="196,2,16,0"
+                                    VerticalAlignment="Center"
+                                    Classes="FieldHint"
+                                    Text="{x:Static resx:ResUI.TipPreSocksPort}"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+
+                            <TextBlock
+                                Margin="132,2,16,0"
+                                Classes="FieldHint"
+                                Text="{x:Static resx:ResUI.CustomServerTips}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border
+                        x:Name="gridCustomOutbound"
+                        Grid.Row="2"
+                        Classes="FormCard"
+                        IsVisible="False">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="ENDPOINT" />
+                            <Grid Classes="FormRow" ColumnDefinitions="132,Auto,*">
+                                <TextBlock Classes="FieldLabel" Text="Sing-Box endpoint" />
+                                <ToggleSwitch
+                                    x:Name="togSingBoxEndpoint"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Left" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="8,0,16,0"
+                                    VerticalAlignment="Center"
+                                    Classes="FieldHint"
+                                    Text="{x:Static resx:ResUI.TbCustomOutboundTip}"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

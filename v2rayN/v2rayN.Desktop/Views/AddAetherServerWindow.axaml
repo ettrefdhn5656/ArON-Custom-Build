@@ -1,0 +1,185 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.AddAetherServerWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="Aether Server"
+    Width="780"
+    Height="680"
+    MinWidth="700"
+    MinHeight="620"
+    x:DataType="vms:AddAetherServerViewModel"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconBolt}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="Aether WARP / MASQUE" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Cloudflare WARP engine with MASQUE transport." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="WARP" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Leave the peer empty to scan automatically." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="128"
+                            Classes="Primary"
+                            Content="Add server"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,10,10,4" Spacing="0">
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="IDENTITY" />
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbRemarks}" />
+                                <TextBox
+                                    x:Name="txtRemarks"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="Name this connection" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="ENGINE" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="Protocol" />
+                                <ComboBox
+                                    x:Name="cmbProtocol"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="Scan mode" />
+                                <ComboBox
+                                    x:Name="cmbScanMode"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="Obfuscation (Noize)" />
+                                <ComboBox
+                                    x:Name="cmbNoize"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="CONNECTION" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="Peer endpoint" />
+                                <TextBox
+                                    x:Name="txtPeer"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="Auto-scan if empty, or ip:port e.g. 162.159.192.1:443" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*,150,*">
+                                <TextBlock Classes="FieldLabel" Text="Local SOCKS port" />
+                                <TextBox
+                                    x:Name="txtPort"
+                                    Grid.Column="1"
+                                    Width="140"
+                                    HorizontalAlignment="Left"
+                                    PlaceholderText="Auto" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="16,0,0,0"
+                                    Classes="FieldLabel"
+                                    Text="{x:Static resx:ResUI.TbDisplayLog}" />
+                                <ToggleSwitch
+                                    x:Name="togDisplayLog"
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Left" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

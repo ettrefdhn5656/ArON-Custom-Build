@@ -1,0 +1,284 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.StatusBarView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    x:DataType="vms:StatusBarViewModel"
+    Design.DataContext="{x:Static dd:DesignData.StatusBar}"
+    Background="Transparent"
+    mc:Ignorable="d">
+    <Grid Background="Transparent">
+        <Border
+            x:Name="borderGlass"
+            HorizontalAlignment="Stretch"
+            Padding="14,10"
+            Classes="ConnectionDock"
+            Classes.connected="{Binding IsConnected}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Left Zone: Windscribe-Style Hero Power Reactor Button -->
+                <StackPanel
+                    x:Name="spEnableTun"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="btnConnect"
+                        Classes="ConnectButton"
+                        Classes.connected="{Binding IsConnected}"
+                        ToolTip.Tip="Toggle full-system TUN protection">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Panel
+                                Width="38"
+                                Height="38"
+                                VerticalAlignment="Center">
+                                <Border
+                                    Classes="OrbHalo"
+                                    IsVisible="{Binding IsConnected}" />
+                                <Border
+                                    Width="36"
+                                    Height="36"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="#2EFFFFFF"
+                                    BorderBrush="#66FFFFFF"
+                                    BorderThickness="1"
+                                    CornerRadius="18">
+                                    <Path
+                                        Width="17"
+                                        Height="17"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="{StaticResource ArONPowerGeometry}"
+                                        Stretch="Uniform" />
+                                </Border>
+                            </Panel>
+
+                            <StackPanel
+                                Grid.Column="1"
+                                Margin="11,0,6,0"
+                                VerticalAlignment="Center"
+                                Spacing="1">
+                                <TextBlock
+                                    FontSize="13.5"
+                                    FontWeight="Bold"
+                                    Foreground="#FFFFFFFF"
+                                    Text="{Binding ConnectButtonText}" />
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <Ellipse
+                                        Width="6"
+                                        Height="6"
+                                        VerticalAlignment="Center"
+                                        Fill="#FFFFFFFF"
+                                        Opacity="0.9" />
+                                    <TextBlock
+                                        FontSize="9.5"
+                                        FontWeight="Bold"
+                                        Foreground="#D9FFFFFF"
+                                        IsVisible="{Binding !IsConnected}"
+                                        Text="READY · TUN OFF" />
+                                    <TextBlock
+                                        FontSize="9.5"
+                                        FontWeight="Bold"
+                                        Foreground="#F2FFFFFF"
+                                        IsVisible="{Binding IsConnected}"
+                                        Text="TUNNEL PROTECTED" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+
+                <!-- Center Zone: Active Server & Latency Telemetry Card (Click to Ping) -->
+                <Border
+                    x:Name="cardRunningServer"
+                    Grid.Column="1"
+                    Margin="14,0"
+                    VerticalAlignment="Center"
+                    Classes="ServerDockCard"
+                    ToolTip.Tip="{Binding RunningServerToolTipText}">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Panel
+                            Width="36"
+                            Height="36"
+                            VerticalAlignment="Center">
+                            <Border
+                                Width="36"
+                                Height="36"
+                                Background="{DynamicResource GlassChipBrush}"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="11">
+                                <PathIcon
+                                    Width="17"
+                                    Height="17"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource ArONShieldGeometry}"
+                                    Foreground="{DynamicResource GlassThemeIconBrush}" />
+                            </Border>
+                            <Border
+                                Width="9"
+                                Height="9"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Background="{DynamicResource GlassPresenceBrush}"
+                                BorderBrush="{DynamicResource GlassPresenceRingBrush}"
+                                BorderThickness="1.5"
+                                CornerRadius="4.5"
+                                IsVisible="{Binding IsConnected}" />
+                        </Panel>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="12,0,10,0"
+                            VerticalAlignment="Center"
+                            Spacing="2">
+                            <TextBlock
+                                x:Name="txtRunningServerDisplay"
+                                FontSize="12.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                x:Name="txtRunningInfoDisplay"
+                                FontSize="11"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+
+                        <Border
+                            Grid.Column="2"
+                            Padding="9,4"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource GlassChipBrush}"
+                            BorderBrush="{DynamicResource GlassHairlineBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            ToolTip.Tip="Click card to test latency">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <PathIcon
+                                    Width="12"
+                                    Height="12"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource ArONRadarPingGeometry}"
+                                    Foreground="{DynamicResource GlassThemeIconBrush}" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="9.5"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource GlassThemeIconBrush}"
+                                    Text="PING" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Right Zone: System Proxy & Routing Capsules + Speed / Port Telemetry -->
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <ComboBox
+                        x:Name="cmbSystemProxy"
+                        Width="176"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        Background="{DynamicResource GlassChipBrush}"
+                        BorderBrush="{DynamicResource GlassBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="11"
+                        FontSize="12"
+                        FontWeight="Medium"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuSystemproxy}">
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxyClear}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxySet}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxyNothing}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxyPac}" />
+                    </ComboBox>
+
+                    <ComboBox
+                        x:Name="cmbRoutings2"
+                        Width="142"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        Background="{DynamicResource GlassChipBrush}"
+                        BorderBrush="{DynamicResource GlassBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="11"
+                        DisplayMemberBinding="{Binding Remarks}"
+                        FontSize="12"
+                        FontWeight="Medium"
+                        ItemsSource="{Binding RoutingItems}"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuRouting}" />
+
+                    <Border
+                        x:Name="borderInbound"
+                        Width="1"
+                        Height="26"
+                        Margin="2,0"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource GlassHairlineBrush}" />
+
+                    <Border
+                        x:Name="spInbound"
+                        Padding="10,4"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource GlassInsetBrush}"
+                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock
+                                x:Name="txtInboundDisplay"
+                                FontSize="10.5"
+                                FontWeight="Medium"
+                                Foreground="{DynamicResource GlassTextPrimaryBrush}" />
+                            <TextBlock
+                                x:Name="txtInboundLanDisplay"
+                                FontSize="10"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border
+                        x:Name="borderSpeeds"
+                        Width="1"
+                        Height="26"
+                        Margin="2,0"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource GlassHairlineBrush}"
+                        IsVisible="{Binding ShowTransferRates}" />
+
+                    <Border
+                        x:Name="spSpeeds"
+                        Padding="10,4"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource GlassInsetBrush}"
+                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        IsVisible="{Binding ShowTransferRates}">
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock
+                                x:Name="txtSpeedProxyDisplay"
+                                HorizontalAlignment="Right"
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassThemeIconBrush}" />
+                            <TextBlock
+                                x:Name="txtSpeedDirectDisplay"
+                                HorizontalAlignment="Right"
+                                FontSize="10"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

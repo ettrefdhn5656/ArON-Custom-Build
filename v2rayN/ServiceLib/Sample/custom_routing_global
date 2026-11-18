@@ -1,0 +1,27 @@
+[
+	{
+		"remarks": "Block UDP 443",
+		"outboundTag": "block",
+		"port": "443",
+		"network": "udp"
+	},
+	{
+		"remarks": "Direct Private IP",
+		"outboundTag": "direct",
+		"ip": [
+			"geoip:private"
+		]
+	},
+	{
+		"remarks": "Direct Private Domain",
+		"outboundTag": "direct",
+		"domain": [
+			"geosite:private"
+		]
+	},
+	{
+		"remarks": "Proxy All",
+		"port": "0-65535",
+		"outboundTag": "proxy"
+	}
+]

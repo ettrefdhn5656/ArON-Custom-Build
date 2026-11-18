@@ -1,0 +1,279 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.RoutingSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuRoutingSetting}"
+    Width="960"
+    Height="640"
+    MinWidth="760"
+    MinHeight="480"
+    x:DataType="vms:RoutingSettingViewModel"
+    Design.DataContext="{x:Static dd:DesignData.RoutingSetting}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <conv:EmptyTextConverter x:Key="StrategyTextConverter" />
+    </Window.Resources>
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        Spacing="4">
+                        <Button
+                            x:Name="menuRoutingAdvancedAdd2"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="{x:Static resx:ResUI.menuRoutingAdvancedAdd}">
+                            <PathIcon Data="{StaticResource SemiIconPlus}" />
+                        </Button>
+                        <Button
+                            x:Name="menuRoutingAdvancedImportRules2"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}">
+                            <PathIcon Data="{StaticResource SemiIconRefresh}" />
+                        </Button>
+                        <Border
+                            Width="1"
+                            Height="18"
+                            Margin="6,0"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource GlassHairlineBrush}" />
+                        <Button
+                            x:Name="menuCloseRouting"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="Close">
+                            <PathIcon Data="{StaticResource SemiIconClose}" />
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconGlobeStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.menuRoutingSetting}" />
+                        <Border Classes="CountPill">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="{Binding RuleCount}" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,12,14,6"
+                Classes="GlassInset"
+                DockPanel.Dock="Top">
+                <Grid
+                    Margin="14,10"
+                    ColumnDefinitions="Auto,300"
+                    RowDefinitions="Auto,Auto">
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="{StaticResource Margin4}"
+                        VerticalAlignment="Center">
+                        <HyperlinkButton Classes="WithIcon" Click="linkdomainStrategy_Click">
+                            <TextBlock Text="{x:Static resx:ResUI.TbdomainStrategy}" />
+                        </HyperlinkButton>
+                    </TextBlock>
+                    <ComboBox
+                        x:Name="cmbdomainStrategy"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Width="300"
+                        Margin="{StaticResource Margin4}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        PlaceholderText="AsIs">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=AsIs}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="{StaticResource Margin4}"
+                        VerticalAlignment="Center">
+                        <HyperlinkButton Classes="WithIcon" Click="linkdomainStrategy4Singbox_Click">
+                            <TextBlock Text="{x:Static resx:ResUI.TbdomainStrategy4Singbox}" />
+                        </HyperlinkButton>
+                    </TextBlock>
+                    <ComboBox
+                        x:Name="cmbdomainStrategy4Singbox"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="300"
+                        Margin="{StaticResource Margin4}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        PlaceholderText="Default">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <Border
+                Margin="14,8,14,12"
+                DockPanel.Dock="Bottom">
+                <DockPanel>
+                    <Border
+                        VerticalAlignment="Center"
+                        Classes="ActivePill"
+                        DockPanel.Dock="Right"
+                        IsVisible="{Binding HasActiveRule}">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Ellipse
+                                Width="6"
+                                Height="6"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource GlassPresenceBrush}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="9"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="ACTIVE" />
+                            <TextBlock
+                                MaxWidth="220"
+                                VerticalAlignment="Center"
+                                FontSize="11.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                Text="{Binding ActiveRuleName}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock
+                        Classes="PageSubtitle"
+                        Text="Rules run top to bottom. Press Enter to set the active rule, or use the right-click menu to edit."
+                        TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,6,14,0"
+                Classes="GlassInset"
+                ClipToBounds="True">
+                <Grid>
+                    <DataGrid
+                        x:Name="lstRoutings"
+                        AutoGenerateColumns="False"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CanUserResizeColumns="True"
+                        GridLinesVisibility="None"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        IsVisible="{Binding !BlIsEmpty}"
+                        ItemsSource="{Binding RoutingItems}"
+                        RowHeight="44">
+                        <DataGrid.KeyBindings>
+                            <KeyBinding Command="{Binding RoutingAdvancedSetDefaultCmd}" Gesture="Enter" />
+                        </DataGrid.KeyBindings>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="menuRoutingAdvancedAdd" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+                                <MenuItem
+                                    x:Name="menuRoutingAdvancedRemove"
+                                    Header="{x:Static resx:ResUI.menuRoutingAdvancedRemove}"
+                                    InputGesture="Back" />
+                                <MenuItem
+                                    x:Name="menuRoutingAdvancedSelectAll"
+                                    Header="{x:Static resx:ResUI.menuSelectAll}"
+                                    InputGesture="Ctrl+A" />
+                                <MenuItem
+                                    x:Name="menuRoutingAdvancedSetDefault"
+                                    Header="{x:Static resx:ResUI.menuRoutingAdvancedSetDefault}"
+                                    InputGesture="Enter" />
+                                <Separator />
+                                <MenuItem x:Name="menuRoutingAdvancedImportRules" Header="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn
+                                Width="48"
+                                Binding="{Binding IsActive}"
+                                Header="" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Remarks}"
+                                Header="{x:Static resx:ResUI.LvRemarks}" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding RuleNum}"
+                                Header="{x:Static resx:ResUI.LvCount}" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding Sort}"
+                                Header="{x:Static resx:ResUI.LvSort}" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Url}"
+                                Header="{x:Static resx:ResUI.LvUrl}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel
+                        MaxWidth="380"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding BlIsEmpty}"
+                        Spacing="5">
+                        <Path
+                            Width="80"
+                            Height="36"
+                            HorizontalAlignment="Center"
+                            Data="{StaticResource ArONMarkGeometry}"
+                            Fill="{DynamicResource GlassThemeIconBrush}"
+                            Stretch="Uniform" />
+                        <TextBlock
+                            Margin="0,12,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                            Text="No routing rules yet" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                            Text="Add a rule to decide which servers or domains use the proxy."
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DockPanel>
+    </Border>
+</Window>

@@ -1,0 +1,82 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.ThemeSettingView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:v2rayN.Desktop.ViewModels"
+    x:DataType="vms:ThemeSettingViewModel"
+    Design.DataContext="{x:Static dd:DesignData.ThemeSetting}"
+    mc:Ignorable="d">
+
+    <Button
+        Width="30"
+        Height="30"
+        MinWidth="30"
+        Margin="2,0,0,0"
+        Padding="0"
+        VerticalAlignment="Center"
+        Classes="IconButton BarGhost ThemeModeButton"
+        ToolTip.Tip="{x:Static resx:ResUI.TbSettingsTheme}">
+        <Button.Content>
+            <PathIcon Data="{DynamicResource GlassThemeIconGeometry}" />
+        </Button.Content>
+        <Button.Flyout>
+            <Flyout Placement="BottomEdgeAlignedRight">
+                <StackPanel Width="290" Spacing="10">
+                    <StackPanel Spacing="2">
+                        <TextBlock
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                            Text="Appearance" />
+                        <TextBlock
+                            FontSize="10.5"
+                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                            Text="Changes apply instantly." />
+                    </StackPanel>
+
+                    <Border
+                        Height="1"
+                        Margin="0,2"
+                        Background="{DynamicResource GlassHairlineBrush}" />
+
+                    <Grid ColumnDefinitions="108,*">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="FieldLabel"
+                            Text="{x:Static resx:ResUI.TbSettingsTheme}" />
+                        <ComboBox
+                            x:Name="cmbCurrentTheme"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="108,*">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="FieldLabel"
+                            Text="{x:Static resx:ResUI.TbSettingsFontSize}" />
+                        <ComboBox
+                            x:Name="cmbCurrentFontSize"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="108,*">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="FieldLabel"
+                            Text="{x:Static resx:ResUI.TbSettingsLanguage}" />
+                        <ComboBox
+                            x:Name="cmbCurrentLanguage"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch" />
+                    </Grid>
+                </StackPanel>
+            </Flyout>
+        </Button.Flyout>
+    </Button>
+</UserControl>

@@ -1,0 +1,315 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.RoutingRuleDetailsWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuRoutingRuleDetailsSetting}"
+    Width="980"
+    Height="720"
+    MinWidth="860"
+    MinHeight="600"
+    x:DataType="vms:RoutingRuleDetailsViewModel"
+    Design.DataContext="{x:Static dd:DesignData.RoutingRuleDetails}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconGlobeStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.menuRoutingRuleDetailsSetting}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Match traffic, then send it to an outbound." />
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="10">
+                        <CheckBox x:Name="chkAutoSort">
+                            <TextBlock Text="{x:Static resx:ResUI.TbAutoSort}" />
+                        </CheckBox>
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Keep this rule in its sorted position." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Ghost"
+                            Content="Cancel"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="128"
+                            Classes="Primary"
+                            Content="Save rule"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Margin="0" RowDefinitions="Auto,*">
+                <Border Classes="FormCard">
+                    <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Classes="SectionLabel"
+                                Text="{x:Static resx:ResUI.LvRemarks}" />
+                            <TextBox x:Name="txtRemarks" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Classes="SectionLabel"
+                                Text="STATUS" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <ToggleSwitch
+                                    x:Name="togEnabled"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Classes="FieldHint"
+                                    Text="Enabled" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="0,12,0,0">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Classes="SectionLabel"
+                                Text="{x:Static resx:ResUI.TbRuleType}" />
+                            <ComboBox
+                                x:Name="cmbRuleType"
+                                HorizontalAlignment="Stretch"
+                                MaxDropDownHeight="1000" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                Classes="FieldHint"
+                                Text="{x:Static resx:ResUI.TbRuleTypeTips}" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Margin="0,12,0,0">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Classes="SectionLabel"
+                                Text="NETWORK" />
+                            <ComboBox
+                                x:Name="cmbNetwork"
+                                HorizontalAlignment="Stretch"
+                                MaxDropDownHeight="1000" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                Classes="FieldHint"
+                                Text="{x:Static resx:ResUI.TbRoutingTips}" />
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="0,12,0,0">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Classes="SectionLabel"
+                                Text="OUTBOUND" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <ComboBox
+                                    Name="cmbOutboundTag"
+                                    VerticalAlignment="Center"
+                                    IsEditable="True" />
+                                <Button
+                                    x:Name="btnSelectProfile"
+                                    Grid.Column="1"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Classes="Soft"
+                                    Content="{x:Static resx:ResUI.TbSelectProfile}" />
+                            </Grid>
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                Classes="FieldHint"
+                                Text="{x:Static resx:ResUI.TbRuleOutboundTagTip}" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Margin="0,12,0,0">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Classes="SectionLabel"
+                                Text="PORT" />
+                            <TextBox
+                                x:Name="txtPort"
+                                Width="180"
+                                HorizontalAlignment="Left" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                Classes="FieldHint"
+                                Text="{x:Static resx:ResUI.TbRuleMatchingTips}" />
+                        </StackPanel>
+
+                        <Grid
+                            Grid.Row="3"
+                            Grid.ColumnSpan="3"
+                            Margin="0,14,0,0"
+                            ColumnDefinitions="*,20,*">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Classes="SectionLabel"
+                                    Text="PROTOCOL" />
+                                <ListBox
+                                    x:Name="clbProtocol"
+                                    HorizontalAlignment="Left"
+                                    Classes="ChipFilter"
+                                    SelectionMode="Multiple,Toggle" />
+                                <HyperlinkButton
+                                    Margin="0,4,0,0"
+                                    Padding="0"
+                                    Classes="WithIcon"
+                                    Click="linkRuleobjectDoc_Click">
+                                    <TextBlock Text="{x:Static resx:ResUI.TbRuleobjectDoc}" />
+                                </HyperlinkButton>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Classes="SectionLabel"
+                                    Text="INBOUND" />
+                                <ListBox
+                                    x:Name="clbInboundTag"
+                                    HorizontalAlignment="Left"
+                                    Classes="ChipFilter"
+                                    SelectionMode="Multiple,Toggle" />
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    Classes="FieldHint"
+                                    Text="{x:Static resx:ResUI.TbRoutingInboundTagTips}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Grid
+                    Grid.Row="1"
+                    Margin="0,4,0,0"
+                    ColumnDefinitions="*,12,*,12,*">
+                    <Border
+                        Grid.Column="0"
+                        Classes="FormCard"
+                        Padding="12,10">
+                        <DockPanel>
+                            <TextBlock
+                                Classes="SectionLabel"
+                                DockPanel.Dock="Top"
+                                Text="{x:Static resx:ResUI.TbRoutingRuleDomain}" />
+                            <TextBlock
+                                Classes="FieldHint"
+                                DockPanel.Dock="Top"
+                                Text="One domain or keyword per line." />
+                            <TextBox
+                                Name="txtDomain"
+                                Margin="0,6,0,0"
+                                MinLines="10"
+                                VerticalAlignment="Stretch"
+                                Classes="TextArea"
+                                TextWrapping="Wrap" />
+                        </DockPanel>
+                    </Border>
+                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                    <Border
+                        Grid.Column="2"
+                        Classes="FormCard"
+                        Padding="12,10">
+                        <DockPanel>
+                            <TextBlock
+                                Classes="SectionLabel"
+                                DockPanel.Dock="Top"
+                                Text="{x:Static resx:ResUI.TbRoutingRuleIP}" />
+                            <TextBlock
+                                Classes="FieldHint"
+                                DockPanel.Dock="Top"
+                                Text="One address or CIDR block per line." />
+                            <TextBox
+                                Name="txtIP"
+                                Margin="0,6,0,0"
+                                MinLines="10"
+                                VerticalAlignment="Stretch"
+                                Classes="TextArea"
+                                TextWrapping="Wrap" />
+                        </DockPanel>
+                    </Border>
+                    <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" />
+                    <Border
+                        Grid.Column="4"
+                        Classes="FormCard"
+                        Padding="12,10">
+                        <DockPanel>
+                            <TextBlock
+                                Classes="SectionLabel"
+                                DockPanel.Dock="Top"
+                                Text="{x:Static resx:ResUI.TbRoutingRuleProcess}" />
+                            <TextBlock
+                                Classes="FieldHint"
+                                DockPanel.Dock="Top"
+                                Text="One process name per line." />
+                            <TextBox
+                                Name="txtProcess"
+                                Margin="0,6,0,0"
+                                MinLines="10"
+                                VerticalAlignment="Stretch"
+                                Classes="TextArea"
+                                TextWrapping="Wrap" />
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </DockPanel>
+    </Border>
+</Window>

@@ -1,0 +1,383 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.RoutingRuleSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuRoutingRuleSetting}"
+    Width="980"
+    Height="700"
+    MinWidth="820"
+    MinHeight="560"
+    x:DataType="vms:RoutingRuleSettingViewModel"
+    Design.DataContext="{x:Static dd:DesignData.RoutingRuleSetting}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <conv:EmptyTextConverter x:Key="StrategyTextConverter" />
+    </Window.Resources>
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        Spacing="4">
+                        <Button
+                            x:Name="menuRuleAdd"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="{x:Static resx:ResUI.menuRuleAdd}">
+                            <PathIcon Data="{StaticResource SemiIconPlus}" />
+                        </Button>
+                        <Button
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="Import rules">
+                            <PathIcon Data="{StaticResource SemiIconMore}">
+                                <PathIcon.RenderTransform>
+                                    <RotateTransform Angle="90" />
+                                </PathIcon.RenderTransform>
+                            </PathIcon>
+                            <Button.Flyout>
+                                <Flyout>
+                                    <Menu>
+                                        <MenuItem x:Name="menuImportRulesFromFile" Header="{x:Static resx:ResUI.menuImportRulesFromFile}" />
+                                        <MenuItem x:Name="menuImportRulesFromClipboard" Header="{x:Static resx:ResUI.menuImportRulesFromClipboard}" />
+                                        <MenuItem x:Name="menuImportRulesFromUrl" Header="{x:Static resx:ResUI.menuImportRulesFromUrl}" />
+                                    </Menu>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Border
+                            Width="1"
+                            Height="18"
+                            Margin="6,0"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource GlassHairlineBrush}" />
+                        <Button
+                            x:Name="btnCloseHeader"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="Close">
+                            <PathIcon Data="{StaticResource SemiIconClose}" />
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconGlobeStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.menuRoutingRuleSetting}" />
+                                <Border Classes="CountPill" VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="10.5"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                        Text="{Binding RuleCount}" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="{Binding SelectedRouting.Remarks}" />
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Rules are evaluated from top to bottom. Right-click a rule for order and export." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="Cancel"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="128"
+                            Classes="Primary"
+                            Content="Save profile"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border
+                Margin="4,8,4,4"
+                Classes="FormCard"
+                DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,Auto,Auto">
+                    <StackPanel Grid.Row="0" Grid.Column="0">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="PROFILE NAME" />
+                        <TextBox
+                            x:Name="txtRemarks"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="2">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="SORT ORDER" />
+                        <TextBox
+                            x:Name="txtSort"
+                            Width="120"
+                            HorizontalAlignment="Left" />
+                    </StackPanel>
+
+                    <StackPanel
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,12,0,0">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="{x:Static resx:ResUI.TbdomainStrategy}" />
+                        <ComboBox
+                            x:Name="cmbdomainStrategy"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="AsIs">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=AsIs}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="0,12,0,0">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="{x:Static resx:ResUI.TbdomainStrategy4Singbox}" />
+                        <ComboBox
+                            x:Name="cmbdomainStrategy4Singbox"
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Default">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0,12,0,0">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="{x:Static resx:ResUI.LvUrl}" />
+                        <TextBox
+                            x:Name="txtUrl"
+                            PlaceholderText="https://example.com/rules.json"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Margin="0,12,0,0">
+                        <HyperlinkButton
+                            Margin="0,0,0,4"
+                            Padding="0"
+                            Classes="WithIcon"
+                            Click="linkCustomRulesetPath4Singbox">
+                            <TextBlock Text="{x:Static resx:ResUI.LvCustomRulesetPath4Singbox}" />
+                        </HyperlinkButton>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox
+                                x:Name="txtCustomRulesetPath4Singbox"
+                                VerticalAlignment="Center"
+                                PlaceholderText="Optional path to a local rule-set file"
+                                TextWrapping="Wrap" />
+                            <Button
+                                x:Name="btnBrowseCustomRulesetPath4Singbox"
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Classes="Soft"
+                                Content="{x:Static resx:ResUI.TbBrowse}" />
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border
+                Margin="4,4,4,0"
+                Padding="0"
+                Classes="FormCard"
+                ClipToBounds="True">
+                <Grid>
+                    <DataGrid
+                        x:Name="lstRules"
+                        Margin="6"
+                        AutoGenerateColumns="False"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        CanUserResizeColumns="True"
+                        GridLinesVisibility="None"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        IsVisible="{Binding !BlIsEmpty}"
+                        ItemsSource="{Binding RulesItems}"
+                        RowHeight="44">
+                        <DataGrid.KeyBindings>
+                            <KeyBinding Command="{Binding RuleExportSelectedCmd}" Gesture="Ctrl+C" />
+                        </DataGrid.KeyBindings>
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="menuRuleAdd2" Header="{x:Static resx:ResUI.menuRuleAdd}" />
+                                <MenuItem
+                                    x:Name="menuRuleRemove"
+                                    Header="{x:Static resx:ResUI.menuRuleRemove}"
+                                    InputGesture="Back" />
+                                <MenuItem
+                                    x:Name="menuRuleSelectAll"
+                                    Header="{x:Static resx:ResUI.menuSelectAll}"
+                                    InputGesture="Ctrl+A" />
+                                <MenuItem x:Name="menuRuleExportSelected" Header="{x:Static resx:ResUI.menuRuleExportSelected}" />
+                                <Separator />
+                                <MenuItem
+                                    x:Name="menuMoveTop"
+                                    Header="{x:Static resx:ResUI.menuMoveTop}"
+                                    InputGesture="T" />
+                                <MenuItem
+                                    x:Name="menuMoveUp"
+                                    Header="{x:Static resx:ResUI.menuMoveUp}"
+                                    InputGesture="U" />
+                                <MenuItem
+                                    x:Name="menuMoveDown"
+                                    Header="{x:Static resx:ResUI.menuMoveDown}"
+                                    InputGesture="D" />
+                                <MenuItem
+                                    x:Name="menuMoveBottom"
+                                    Header="{x:Static resx:ResUI.menuMoveBottom}"
+                                    InputGesture="B" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn
+                                Width="54"
+                                Binding="{Binding Enabled}"
+                                Header="" />
+                            <DataGridTextColumn
+                                Width="160"
+                                Binding="{Binding Remarks}"
+                                Header="{x:Static resx:ResUI.LvRemarks}" />
+                            <DataGridTextColumn
+                                Width="96"
+                                Binding="{Binding RuleTypeName}"
+                                Header="{x:Static resx:ResUI.TbRuleType}" />
+                            <DataGridTextColumn
+                                Width="116"
+                                Binding="{Binding OutboundTag}"
+                                Header="OUTBOUND" />
+                            <DataGridTextColumn
+                                Width="76"
+                                Binding="{Binding Port}"
+                                Header="PORT" />
+                            <DataGridTextColumn
+                                Width="96"
+                                Binding="{Binding Protocols}"
+                                Header="PROTOCOL" />
+                            <DataGridTextColumn
+                                Width="104"
+                                Binding="{Binding InboundTags}"
+                                Header="INBOUND" />
+                            <DataGridTextColumn
+                                Width="86"
+                                Binding="{Binding Network}"
+                                Header="NETWORK" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Domains}"
+                                Header="DOMAIN / IP / PROCESS" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel
+                        MaxWidth="380"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding BlIsEmpty}"
+                        Spacing="5">
+                        <Path
+                            Width="80"
+                            Height="36"
+                            HorizontalAlignment="Center"
+                            Data="{StaticResource ArONMarkGeometry}"
+                            Fill="{DynamicResource GlassThemeIconBrush}"
+                            Stretch="Uniform" />
+                        <TextBlock
+                            Margin="0,12,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                            Text="No rules in this profile" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                            Text="Add a rule or import an existing list to start routing traffic."
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+                        <Button
+                            Margin="0,10,0,0"
+                            HorizontalAlignment="Center"
+                            Classes="Primary"
+                            Command="{Binding RuleAddCmd}"
+                            Content="Add first rule" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DockPanel>
+    </Border>
+</Window>

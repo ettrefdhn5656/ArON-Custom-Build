@@ -1,0 +1,61 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.QrcodeView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=netstandard"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <sys:Double x:Key="QrcodeWidth">340</sys:Double>
+    </UserControl.Resources>
+
+    <Border
+        Background="{DynamicResource GlassDrawerBrush}"
+        BorderBrush="{DynamicResource GlassBorderBrush}"
+        BorderThickness="1"
+        BoxShadow="{DynamicResource GlassDrawerShadow}"
+        ClipToBounds="True"
+        CornerRadius="18">
+        <StackPanel Margin="20" Spacing="12">
+            <StackPanel Spacing="2">
+                <TextBlock
+                    FontSize="15"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                    Text="Scan to import" />
+                <TextBlock
+                    FontSize="11"
+                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                    Text="Point your phone camera at the code." />
+            </StackPanel>
+
+            <Border
+                Padding="14"
+                HorizontalAlignment="Center"
+                Background="White"
+                CornerRadius="14">
+                <Image
+                    Name="imgQrcode"
+                    Width="{StaticResource QrcodeWidth}"
+                    Height="{StaticResource QrcodeWidth}" />
+            </Border>
+
+            <TextBox
+                x:Name="txtContent"
+                Width="{StaticResource QrcodeWidth}"
+                MaxHeight="92"
+                Margin="0,2,0,0"
+                HorizontalAlignment="Center"
+                IsReadOnly="True"
+                TextWrapping="WrapWithOverflow" />
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                Classes="FieldHint"
+                Text="Click outside to close."
+                TextWrapping="Wrap" />
+        </StackPanel>
+    </Border>
+</UserControl>

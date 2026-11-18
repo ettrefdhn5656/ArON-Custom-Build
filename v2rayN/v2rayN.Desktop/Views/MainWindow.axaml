@@ -1,0 +1,412 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="ArON"
+    Width="1220"
+    Height="820"
+    MinWidth="680"
+    MinHeight="560"
+    x:DataType="vms:MainWindowViewModel"
+    Design.DataContext="{x:Static dd:DesignData.MainWindow}"
+    Icon="/Assets/ArON.ico"
+    ShowInTaskbar="True"
+    SizeChanged="Window_SizeChanged"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <dialogHost:DialogHost
+        Background="Transparent"
+        CloseOnClickAway="True"
+        DisableOpeningAnimation="True">
+        <Grid>
+            <Border Background="{DynamicResource GlassCanvasBrush}" />
+            <Ellipse
+                Width="820"
+                Height="820"
+                Margin="0,-380,-280,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Classes="AmbientGlow GlowGold"
+                Fill="{DynamicResource GlassGlowSecondaryBrush}" />
+            <Ellipse
+                Width="740"
+                Height="740"
+                Margin="-280,0,0,-340"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Classes="AmbientGlow"
+                Fill="{DynamicResource GlassGlowPrimaryBrush}" />
+            <Ellipse
+                Width="760"
+                Height="760"
+                Margin="0,0,-220,-360"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Classes="AmbientGlow GlowJade"
+                Fill="{DynamicResource GlassGlowAccentBrush}" />
+
+            <DockPanel>
+                <!-- Top Commercial Glass Navigation Bar -->
+                <Border
+                    x:Name="topBar"
+                    Classes="GlassBar"
+                    Margin="14,12,14,6"
+                    Padding="14,7,10,7"
+                    DockPanel.Dock="Top">
+                    <DockPanel>
+                        <ContentControl x:Name="conTheme" DockPanel.Dock="Right" />
+                        <Button
+                            x:Name="btnConsole"
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            Classes="BarGhost ConsolePill"
+                            Click="BtnConsole_Click"
+                            DockPanel.Dock="Right"
+                            ToolTip.Tip="Open console">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon
+                                    Width="14"
+                                    Height="14"
+                                    Data="{StaticResource SemiIconTerminal}" />
+                                <TextBlock
+                                    x:Name="txtConsoleLabel"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Text="Console" />
+                            </StackPanel>
+                        </Button>
+
+                        <StackPanel
+                            Margin="2,0,0,0"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="10">
+                            <Border
+                                Width="34"
+                                Height="34"
+                                Padding="5"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource GlassInsetBrush}"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10">
+                                <Path
+                                    x:Name="brandMark"
+                                    Data="{StaticResource ArONMarkGeometry}"
+                                    Fill="{DynamicResource ArONBrandBrush}"
+                                    Stretch="Uniform" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <TextBlock
+                                        x:Name="txtBrand"
+                                        VerticalAlignment="Center"
+                                        FontSize="14.5"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                        Text="ArON" />
+                                    <Panel
+                                        Width="18"
+                                        Height="18"
+                                        VerticalAlignment="Center"
+                                        IsVisible="{Binding StatusBarViewModel.IsConnected}"
+                                        ToolTip.Tip="Tunnel Active">
+                                        <Border
+                                            Background="Transparent"
+                                            Classes="PresenceHalo" />
+                                        <Border
+                                            Width="7"
+                                            Height="7"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Background="{DynamicResource GlassPresenceBrush}"
+                                            BoxShadow="{DynamicResource GlassPresenceShadow}"
+                                            Classes="PresenceDot"
+                                            CornerRadius="3.5" />
+                                    </Panel>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border
+                            x:Name="brandSeparator"
+                            Width="1"
+                            Height="20"
+                            Margin="14,0,8,0"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource GlassHairlineBrush}" />
+
+                        <Menu
+                            VerticalAlignment="Center"
+                            Background="Transparent">
+                            <MenuItem Header="{x:Static resx:ResUI.menuServers}">
+                                <MenuItem
+                                    x:Name="menuAddServerViaClipboard"
+                                    Header="{x:Static resx:ResUI.menuAddServerViaClipboard}"
+                                    InputGesture="Ctrl+V" />
+                                <MenuItem
+                                    x:Name="menuAddServerViaScan"
+                                    Header="{x:Static resx:ResUI.menuAddServerViaScan}"
+                                    InputGesture="Ctrl+S" />
+                                <MenuItem x:Name="menuAddServerViaImage" Header="{x:Static resx:ResUI.menuAddServerViaImage}" />
+                                <Separator />
+                                <MenuItem x:Name="menuAddAetherServer" Header="{x:Static resx:ResUI.menuAddAetherServer}" />
+                                <MenuItem x:Name="menuAddPsiphonServer" Header="{x:Static resx:ResUI.menuAddPsiphonServer}" />
+                                <MenuItem x:Name="menuAddCustomServer" Header="{x:Static resx:ResUI.menuAddCustomServer}" />
+                                <MenuItem x:Name="menuAddPolicyGroupServer" Header="{x:Static resx:ResUI.menuAddPolicyGroupServer}" />
+                                <MenuItem x:Name="menuAddProxyChainServer" Header="{x:Static resx:ResUI.menuAddProxyChainServer}" />
+                                <MenuItem x:Name="menuDoubleTunnel" Header="{x:Static resx:ResUI.menuDoubleTunnel}" />
+                                <MenuItem x:Name="menuCloudflareScanner" Header="{x:Static resx:ResUI.menuCloudflareScanner}" />
+                                <MenuItem x:Name="menuAddCustomOutboundServer" Header="{x:Static resx:ResUI.menuAddCustomOutboundServer}" />
+                                <Separator />
+                                <MenuItem x:Name="menuAddVmessServer" Header="{x:Static resx:ResUI.menuAddVmessServer}" />
+                                <MenuItem x:Name="menuAddVlessServer" Header="{x:Static resx:ResUI.menuAddVlessServer}" />
+                                <MenuItem x:Name="menuAddShadowsocksServer" Header="{x:Static resx:ResUI.menuAddShadowsocksServer}" />
+                                <MenuItem x:Name="menuAddTrojanServer" Header="{x:Static resx:ResUI.menuAddTrojanServer}" />
+                                <MenuItem x:Name="menuAddHysteria2Server" Header="{x:Static resx:ResUI.menuAddHysteria2Server}" />
+                                <MenuItem x:Name="menuAddWireguardServer" Header="{x:Static resx:ResUI.menuAddWireguardServer}" />
+                                <MenuItem x:Name="menuAddSocksServer" Header="{x:Static resx:ResUI.menuAddSocksServer}" />
+                                <MenuItem x:Name="menuAddHttpServer" Header="{x:Static resx:ResUI.menuAddHttpServer}" />
+                                <Separator />
+                                <MenuItem x:Name="menuAddTuicServer" Header="{x:Static resx:ResUI.menuAddTuicServer}" />
+                                <MenuItem x:Name="menuAddAnytlsServer" Header="{x:Static resx:ResUI.menuAddAnytlsServer}" />
+                                <MenuItem x:Name="menuAddNaiveServer" Header="{x:Static resx:ResUI.menuAddNaiveServer}" />
+                            </MenuItem>
+
+                            <MenuItem Header="{x:Static resx:ResUI.menuSubscription}">
+                                <MenuItem x:Name="menuSubSetting" Header="{x:Static resx:ResUI.menuSubSetting}" />
+                                <Separator />
+                                <MenuItem x:Name="menuSubUpdate" Header="{x:Static resx:ResUI.menuSubUpdate}" />
+                                <MenuItem x:Name="menuSubUpdateViaProxy" Header="{x:Static resx:ResUI.menuSubUpdateViaProxy}" />
+                            </MenuItem>
+
+                            <MenuItem Header="{x:Static resx:ResUI.menuSetting}">
+                                <MenuItem x:Name="menuOptionSetting" Header="{x:Static resx:ResUI.menuOptionSetting}" />
+                                <MenuItem x:Name="menuRoutingSetting" Header="{x:Static resx:ResUI.menuRoutingSetting}" />
+                                <MenuItem x:Name="menuDNSSetting" Header="{x:Static resx:ResUI.menuDNSSetting}" />
+                                <MenuItem x:Name="menuFullConfigTemplate" Header="{x:Static resx:ResUI.menuFullConfigTemplate}" />
+                                <MenuItem
+                                    x:Name="menuGlobalHotkeySetting"
+                                    Header="{x:Static resx:ResUI.menuGlobalHotkeySetting}"
+                                    IsVisible="{Binding BlIsWindows}" />
+                                <Separator />
+                                <MenuItem
+                                    x:Name="menuRebootAsAdmin"
+                                    Header="{x:Static resx:ResUI.menuRebootAsAdmin}"
+                                    IsVisible="{Binding BlIsWindows}" />
+                                <MenuItem
+                                    x:Name="menuSettingsSetUWP"
+                                    Header="{x:Static resx:ResUI.TbSettingsSetUWP}"
+                                    IsVisible="{Binding BlIsWindows}" />
+                                <MenuItem x:Name="menuClearServerStatistics" Header="{x:Static resx:ResUI.menuClearServerStatistics}" />
+                                <Separator />
+                                <MenuItem Header="{x:Static resx:ResUI.menuRegionalPresets}">
+                                    <MenuItem x:Name="menuRegionalPresetsDefault" Header="{x:Static resx:ResUI.menuRegionalPresetsDefault}" />
+                                    <MenuItem x:Name="menuRegionalPresetsRussia" Header="{x:Static resx:ResUI.menuRegionalPresetsRussia}" />
+                                    <MenuItem x:Name="menuRegionalPresetsIran" Header="{x:Static resx:ResUI.menuRegionalPresetsIran}" />
+                                    <MenuItem x:Name="menuRegionalPresetsChina" Header="{x:Static resx:ResUI.menuRegionalPresetsChina}" />
+                                </MenuItem>
+                                <MenuItem x:Name="menuBackupAndRestore" Header="{x:Static resx:ResUI.menuBackupAndRestore}" />
+                                <MenuItem x:Name="menuOpenTheFileLocation" Header="{x:Static resx:ResUI.menuOpenTheFileLocation}" />
+                            </MenuItem>
+
+                            <MenuItem Header="L.C Settings">
+                                <MenuItem x:Name="menuSniSpoofingSetting" Header="SNI Spoofing Settings" />
+                                <MenuItem x:Name="menuMhrSetting" Header="MHR Settings" />
+                                <MenuItem x:Name="menuPsiphonSetting" Header="Psiphon Shirokhorshid Settings" />
+                                <MenuItem x:Name="menuStopMhr" Header="Stop MHR" />
+                                <Separator />
+                                <MenuItem x:Name="menuLcCloudflareScanner" Header="{x:Static resx:ResUI.menuCloudflareScanner}" />
+                            </MenuItem>
+
+                            <MenuItem x:Name="menuHelp" Header="{x:Static resx:ResUI.menuHelp}">
+                                <MenuItem x:Name="menuCheckUpdate" Header="{x:Static resx:ResUI.menuCheckUpdate}" />
+                                <MenuItem x:Name="menuBetaUpdates" Header="Beta Updates" />
+                                <MenuItem x:Name="menuDownloadRelease" Header="Download Latest Release (GitHub)" />
+                                <Separator />
+                            </MenuItem>
+
+                            <MenuItem x:Name="menuReload" Header="{x:Static resx:ResUI.menuReload}" />
+
+                            <MenuItem x:Name="menuClose" Header="{x:Static resx:ResUI.menuExit}" />
+                        </Menu>
+
+                        <Button
+                            x:Name="btnNewUpdate"
+                            Margin="{StaticResource MarginLr8}"
+                            HorizontalAlignment="Left"
+                            Classes="Primary"
+                            Content="{x:Static resx:ResUI.menuNewUpdate}"
+                            CornerRadius="10"
+                            Height="30"
+                            IsVisible="False"
+                            Padding="12,0" />
+                    </DockPanel>
+                </Border>
+
+                <!-- Main Workspace & Docked Windscribe-Style Bottom Connection Deck -->
+                <Grid RowDefinitions="*,Auto">
+                    <Border
+                        Grid.Row="0"
+                        Classes="GlassPanel"
+                        ClipToBounds="True"
+                        Margin="14,2,14,10"
+                        Padding="10">
+                        <ContentControl x:Name="contentProfiles" />
+                    </Border>
+
+                    <ContentControl
+                        x:Name="contentStatusBarView"
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        Margin="14,0,14,14" />
+                </Grid>
+            </DockPanel>
+
+            <!-- Slide-over Console Drawer -->
+            <Grid x:Name="consoleLayer" IsVisible="False">
+                <Border
+                    x:Name="consoleScrim"
+                    Background="{DynamicResource GlassScrimBrush}"
+                    Opacity="0"
+                    PointerPressed="ConsoleScrim_PointerPressed">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                        </Transitions>
+                    </Border.Transitions>
+                </Border>
+
+                <Border
+                    x:Name="consoleDrawer"
+                    Width="500"
+                    Margin="0,12,14,14"
+                    HorizontalAlignment="Right"
+                    Background="{DynamicResource GlassDrawerBrush}"
+                    BorderBrush="{DynamicResource GlassBorderBrush}"
+                    BorderThickness="1"
+                    BoxShadow="{DynamicResource GlassDrawerShadow}"
+                    ClipToBounds="True"
+                    CornerRadius="22"
+                    Opacity="0">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.22" Easing="CubicEaseOut" />
+                        </Transitions>
+                    </Border.Transitions>
+                    <Border.RenderTransform>
+                        <TranslateTransform X="34">
+                            <TranslateTransform.Transitions>
+                                <Transitions>
+                                    <DoubleTransition
+                                        Property="X"
+                                        Duration="0:0:0.28"
+                                        Easing="CubicEaseOut" />
+                                </Transitions>
+                            </TranslateTransform.Transitions>
+                        </TranslateTransform>
+                    </Border.RenderTransform>
+
+                    <Grid RowDefinitions="Auto,Auto,*,Auto">
+                        <Grid
+                            Grid.Row="0"
+                            Margin="18,16,14,12"
+                            ColumnDefinitions="Auto,*,Auto">
+                            <Border
+                                Width="38"
+                                Height="38"
+                                Padding="6"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource GlassInsetBrush}"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="11">
+                                <Path
+                                    Data="{StaticResource ArONMarkGeometry}"
+                                    Fill="{DynamicResource ArONBrandBrush}"
+                                    Stretch="Uniform" />
+                            </Border>
+                            <StackPanel
+                                Grid.Column="1"
+                                Margin="12,0,8,0"
+                                VerticalAlignment="Center"
+                                Spacing="1">
+                                <TextBlock
+                                    FontSize="15.5"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="Console" />
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Text="Live logs, proxy groups and active connections" />
+                            </StackPanel>
+                            <Button
+                                x:Name="btnConsoleClose"
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Classes="IconButton ToolGlass"
+                                Click="BtnConsoleClose_Click"
+                                ToolTip.Tip="Close console">
+                                <PathIcon Data="{StaticResource SemiIconClose}" />
+                            </Button>
+                        </Grid>
+
+                        <Border
+                            Grid.Row="1"
+                            Height="1"
+                            Margin="18,0"
+                            Background="{StaticResource ArONHairlineBrush}" />
+
+                        <TabControl
+                            x:Name="consoleTabs"
+                            Grid.Row="2"
+                            Margin="14,6,14,0"
+                            Classes="ConsoleTabs"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch">
+                            <TabItem x:Name="tabConsoleLogs" Header="Logs">
+                                <ContentControl x:Name="consoleLogsHost" Margin="2,8,2,0" />
+                            </TabItem>
+                            <TabItem x:Name="tabConsoleProxies" Header="Proxies">
+                                <ContentControl x:Name="consoleProxiesHost" Margin="2,8,2,0" />
+                            </TabItem>
+                            <TabItem x:Name="tabConsoleConnections" Header="Connections">
+                                <ContentControl x:Name="consoleConnectionsHost" Margin="2,8,2,0" />
+                            </TabItem>
+                        </TabControl>
+
+                        <Border
+                            Grid.Row="3"
+                            Margin="18,6,18,0"
+                            BorderBrush="{DynamicResource GlassHairlineBrush}"
+                            BorderThickness="0,1,0,0"
+                            Padding="0,9,0,11">
+                            <DockPanel>
+                                <TextBlock
+                                    DockPanel.Dock="Right"
+                                    FontSize="10.5"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Opacity="0.85"
+                                    Text="Esc to close" />
+                                <TextBlock
+                                    FontSize="10.5"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Opacity="0.85"
+                                    Text="Session telemetry is kept locally" />
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </dialogHost:DialogHost>
+</Window>

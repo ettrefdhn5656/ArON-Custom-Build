@@ -1,0 +1,220 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.SniSpoofingSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="SNI Spoofing Settings"
+    Width="720"
+    Height="680"
+    MinWidth="640"
+    MinHeight="560"
+    x:DataType="vms:SniSpoofingSettingViewModel"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconBolt}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="SNI Spoofing" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="A decoy TLS ClientHello before the real handshake." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Rust · Python" />
+                        </Border>
+                        <Border
+                            Classes="ActivePill"
+                            IsVisible="{Binding Enabled}"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="9.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="ACTIVE" />
+                        </Border>
+                        <Border
+                            Classes="CountPill"
+                            IsVisible="{Binding !Enabled}"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="9.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="OFF" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Windows administrator permission is required." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="132"
+                            Classes="Primary"
+                            Content="Save settings"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,10,10,4" Spacing="0">
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="BEHAVIOR" />
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="SNI spoofing" />
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="10">
+                                    <ToggleSwitch IsChecked="{Binding Enabled}" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldHint"
+                                        Text="Use with the active compatible profile." />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="ENGINE" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="Spoofing engine" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{Binding Engines}"
+                                    SelectedItem="{Binding Engine}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,220,Auto,*">
+                                <TextBlock Classes="FieldLabel" Text="Listen host" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Width="200"
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding ListenHost}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="16,0,0,0"
+                                    Classes="FieldLabel"
+                                    Text="Listen port" />
+                                <NumericUpDown
+                                    Grid.Column="3"
+                                    Width="140"
+                                    HorizontalAlignment="Left"
+                                    Maximum="65535"
+                                    Minimum="1"
+                                    Value="{Binding ListenPort}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,*">
+                                <TextBlock Classes="FieldLabel" Text="Fake SNI" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="auth.vercel.com"
+                                    Text="{Binding FakeSni}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="150,220,Auto,*">
+                                <TextBlock Classes="FieldLabel" Text="Connect IP" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Width="200"
+                                    HorizontalAlignment="Left"
+                                    PlaceholderText="Auto from profile"
+                                    Text="{Binding ConnectIp}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="16,0,0,0"
+                                    Classes="FieldLabel"
+                                    Text="Connect port" />
+                                <NumericUpDown
+                                    Grid.Column="3"
+                                    Width="140"
+                                    HorizontalAlignment="Left"
+                                    Maximum="65535"
+                                    Minimum="1"
+                                    Value="{Binding ConnectPort}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="NOTES" />
+                            <TextBlock
+                                Classes="FieldHint"
+                                Text="Leave Connect IP blank to resolve the active profile automatically. The Rust engine uses about 5 MB RAM and adds very little latency."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

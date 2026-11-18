@@ -1,0 +1,625 @@
+name: Build and Release MehrON
+
+on:
+  push:
+    branches:
+      - main
+      - Beta
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a GitHub Release'
+        required: false
+        type: boolean
+        default: true
+      release_tag:
+        description: 'Release Tag (leave empty to use Directory.Build.props version)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build-windows:
+    name: Build Windows x64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Resolve Version
+        id: version_step
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $tag = "${{ github.ref_name }}"
+          } elseif ("${{ inputs.release_tag }}" -ne "") {
+            $tag = "${{ inputs.release_tag }}"
+            if (-not $tag.StartsWith("v")) { $tag = "v$tag" }
+          } else {
+            $propVer = [xml](Get-Content ./v2rayN/Directory.Build.props)
+            $v = $propVer.Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+            $ref = "${{ github.ref_name }}"
+            $tag = if ($ref -eq "Beta" -and -not $v.Contains("-beta")) { "v$v-beta" } else { "v$v" }
+          }
+          Write-Host "Resolved Version Tag: $tag"
+          "TAG_NAME=$tag" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build & Publish MehrON
+        shell: pwsh
+        run: |
+          $outDir = "./dist/MehrON-windows-64"
+          dotnet publish ./v2rayN/v2rayN.Desktop/v2rayN.Desktop.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:DebugType=none `
+            -p:DebugSymbols=false `
+            -o $outDir
+
+          dotnet publish ./v2rayN/AmazTool/AmazTool.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:DebugType=none `
+            -p:DebugSymbols=false `
+            -o $outDir
+
+          # Remove debug symbols if any
+          Get-ChildItem -Path $outDir -Filter "*.pdb" -Recurse | Remove-Item -Force
+
+          if (-not (Test-Path "$outDir/MehrON.exe")) {
+            throw "MehrON.exe was not built or found in $outDir"
+          }
+          if (-not (Test-Path "$outDir/AmazTool.exe")) {
+            throw "AmazTool.exe was not built or found in $outDir"
+          }
+
+      - name: Bundle Core Binaries
+        shell: pwsh
+        run: |
+          $outDir = "$((Get-Location).Path)/dist/MehrON-windows-64"
+          $binDir = "$outDir/bin"
+          New-Item -ItemType Directory -Path "$binDir/xray" -Force | Out-Null
+          New-Item -ItemType Directory -Path "$binDir/sing_box" -Force | Out-Null
+          New-Item -ItemType Directory -Path "$binDir/mihomo" -Force | Out-Null
+          New-Item -ItemType Directory -Path "$binDir/sni-spoofing" -Force | Out-Null
+
+          # Build standalone SNI Spoofing engine
+          Write-Host "Building standalone SNI Spoofing engine..."
+          pip install --upgrade pydivert pyinstaller
+          Push-Location "./_upstream_sni_spoofing"
+          pyinstaller --noconfirm --onedir --name sni-spoofing --collect-all pydivert main.py
+          Copy-Item -Path "dist/sni-spoofing/_internal/pydivert/windivert_dll/WinDivert64.*" -Destination "dist/sni-spoofing/" -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "dist/sni-spoofing/WinDivert64.sys" -Destination "dist/sni-spoofing/WinDivert.sys" -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "dist/sni-spoofing/_internal/pydivert/windivert_dll/WinDivert64.sys" -Destination "dist/sni-spoofing/_internal/pydivert/windivert_dll/WinDivert.sys" -Force -ErrorAction SilentlyContinue
+          Pop-Location
+          Copy-Item -Path "_upstream_sni_spoofing/dist/sni-spoofing/*" -Destination "$binDir/sni-spoofing/" -Recurse -Force
+
+          # Download Rust SNI Spoofing engine (sni-spoof-rs)
+          Write-Host "Downloading Rust SNI Spoofing engine..."
+          $rustZip = "sni-spoof-rs.zip"
+          curl.exe -L -s -o $rustZip "https://github.com/therealaleph/sni-spoofing-rust/releases/latest/download/sni-spoof-rs-windows-amd64.zip"
+          Expand-Archive -Path $rustZip -DestinationPath "rust-extracted" -Force
+          Copy-Item -Path "rust-extracted/sni-spoof-rs.exe" -Destination "$binDir/sni-spoofing/" -Force
+          Copy-Item -Path "rust-extracted/WinDivert64.sys" -Destination "$binDir/sni-spoofing/" -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "rust-extracted/WinDivert.dll" -Destination "$binDir/sni-spoofing/" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path $rustZip, "rust-extracted" -Recurse -Force -ErrorAction SilentlyContinue
+
+          # Download latest Xray-core (patterniha v26.10.27)
+          Write-Host "Downloading latest Xray-core..."
+          $xrayZip = "xray-latest.zip"
+          curl.exe -L -s -o $xrayZip "https://github.com/patterniha/Xray-core/releases/latest/download/Xray-windows-64.zip"
+          Expand-Archive -Path $xrayZip -DestinationPath "xray-extracted" -Force
+          Copy-Item -Path "xray-extracted/xray.exe" -Destination "$binDir/xray/" -Force
+          Copy-Item -Path "xray-extracted/geosite.dat" -Destination "$binDir/" -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "xray-extracted/geoip.dat" -Destination "$binDir/" -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "xray-extracted/geosite.dat" -Destination "$binDir/xray/" -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "xray-extracted/geoip.dat" -Destination "$binDir/xray/" -Force -ErrorAction SilentlyContinue
+
+          # Download v2rayN-core-bin bundle for wintun, srss rules, and base utilities
+          Write-Host "Downloading core binaries bundle..."
+          $coreZip = "core-bin.zip"
+          curl.exe -L -s -o $coreZip "https://raw.githubusercontent.com/2dust/v2rayN-core-bin/refs/heads/master/v2rayN-windows-64.zip"
+          Expand-Archive -Path $coreZip -DestinationPath "core-extracted" -Force
+
+          # Copy base utilities and shared libraries
+          $coreRoot = if (Test-Path "core-extracted/v2rayN-windows-64/bin") { "core-extracted/v2rayN-windows-64/bin" } else { "core-extracted/bin" }
+          if (Test-Path "$coreRoot/xray/wintun.dll") {
+            Copy-Item -Path "$coreRoot/xray/wintun.dll" -Destination "$binDir/xray/" -Force
+            Copy-Item -Path "$coreRoot/xray/wintun.dll" -Destination "$binDir/sing_box/" -Force
+            Copy-Item -Path "$coreRoot/xray/wintun.dll" -Destination "$binDir/mihomo/" -Force
+          }
+          if (Test-Path "$coreRoot/EnableLoopback.exe") {
+            Copy-Item -Path "$coreRoot/EnableLoopback.exe" -Destination "$binDir/" -Force
+          }
+          if (Test-Path "$coreRoot/Country.mmdb") {
+            Copy-Item -Path "$coreRoot/Country.mmdb" -Destination "$binDir/" -Force
+            Copy-Item -Path "$coreRoot/Country.mmdb" -Destination "$binDir/mihomo/" -Force
+          }
+          if (Test-Path "$coreRoot/geoip.metadb") {
+            Copy-Item -Path "$coreRoot/geoip.metadb" -Destination "$binDir/" -Force
+            Copy-Item -Path "$coreRoot/geoip.metadb" -Destination "$binDir/mihomo/" -Force
+          }
+          if (Test-Path "$coreRoot/srss") {
+            Copy-Item -Path "$coreRoot/srss" -Destination "$binDir/" -Recurse -Force
+          }
+
+          # Download latest sing-box (v1.14.4)
+          Write-Host "Downloading latest sing-box (v1.14.4)..."
+          $singZip = "sing-box-latest.zip"
+          curl.exe -L -s -o $singZip "https://github.com/SagerNet/sing-box/releases/download/v1.14.4/sing-box-1.14.4-windows-amd64.zip"
+          Expand-Archive -Path $singZip -DestinationPath "sing-extracted" -Force
+          $singExe = Get-ChildItem -Path "sing-extracted" -Recurse -Filter "sing-box.exe" | Select-Object -First 1
+          if ($singExe) {
+            Copy-Item -Path $singExe.FullName -Destination "$binDir/sing_box/sing-box.exe" -Force
+          }
+          if (Test-Path "$coreRoot/sing_box/libcronet.dll") {
+            Copy-Item -Path "$coreRoot/sing_box/libcronet.dll" -Destination "$binDir/sing_box/" -Force
+          }
+
+          # Download latest mihomo (v1.19.33)
+          Write-Host "Downloading latest mihomo (v1.19.33)..."
+          $mihomoZip = "mihomo-latest.zip"
+          curl.exe -L -s -o $mihomoZip "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.33/mihomo-windows-amd64-compatible-v1.19.33.zip"
+          Expand-Archive -Path $mihomoZip -DestinationPath "mihomo-extracted" -Force
+          $mihomoExe = Get-ChildItem -Path "mihomo-extracted" -Recurse -Filter "*.exe" | Select-Object -First 1
+          if ($mihomoExe) {
+            Copy-Item -Path $mihomoExe.FullName -Destination "$binDir/mihomo/mihomo.exe" -Force
+            Copy-Item -Path $mihomoExe.FullName -Destination "$binDir/mihomo/$($mihomoExe.Name)" -Force
+          }
+
+          # Download latest Aether
+          Write-Host "Downloading latest Aether..."
+          $aetherZip = "aether-latest.zip"
+          curl.exe -L -s -o $aetherZip "https://github.com/CluvexStudio/Aether/releases/latest/download/aether-windows-x86_64.zip"
+          Expand-Archive -Path $aetherZip -DestinationPath "aether-extracted" -Force
+          $aetherExe = Get-ChildItem -Path "aether-extracted" -Recurse -Filter "aether.exe" | Select-Object -First 1
+          if ($aetherExe) {
+            New-Item -ItemType Directory -Path "$binDir/aether" -Force | Out-Null
+            Copy-Item -Path $aetherExe.FullName -Destination "$binDir/aether/aether.exe" -Force
+            if (Test-Path "$($aetherExe.DirectoryName)/pt") {
+              Copy-Item -Path "$($aetherExe.DirectoryName)/pt" -Destination "$binDir/aether/" -Recurse -Force
+            }
+          }
+
+          # Build latest psiphon-tunnel-core from shirokhorshid fork
+          Write-Host "Building psiphon-tunnel-core from shirokhorshid fork..."
+          New-Item -ItemType Directory -Path "$binDir/psiphon" -Force | Out-Null
+          git clone --depth 1 https://github.com/shirokhorshid/psiphon-tunnel-core.git psiphon-src
+          $unsafeFile = "psiphon-src/vendor/github.com/Psiphon-Labs/psiphon-tls/unsafe.go"
+          if (Test-Path $unsafeFile) {
+            $content = Get-Content $unsafeFile -Raw
+            $content = $content.Replace('panic(fmt.Sprintf("tls: ConnectionState', '// panic(fmt.Sprintf("tls: ConnectionState')
+            Set-Content -Path $unsafeFile -Value $content -NoNewline
+          }
+          Push-Location psiphon-src/ConsoleClient
+          go build -ldflags "-s -w" -o "$binDir/psiphon/psiphon.exe" .
+          Pop-Location
+          Copy-Item "$binDir/psiphon/psiphon.exe" "$binDir/psiphon/psiphon-tunnel-core.exe"
+          Copy-Item "./v2rayN/ServiceLib/Sample/psiphon_server_list" "$binDir/psiphon/server_list.dat" -Force
+          Remove-Item -Recurse -Force psiphon-src
+
+          # Verify core binaries exist and print versions
+          if (-not (Test-Path "$binDir/xray/xray.exe")) {
+            throw "xray.exe was not found or copied into bin/xray/"
+          }
+          if (-not (Test-Path "$binDir/sing_box/sing-box.exe")) {
+            throw "sing-box.exe was not found or copied into bin/sing_box/"
+          }
+          if (-not (Test-Path "$binDir/mihomo/mihomo.exe")) {
+            throw "mihomo.exe was not found or copied into bin/mihomo/"
+          }
+          if (-not (Test-Path "$binDir/aether/aether.exe")) {
+            throw "aether.exe was not found or copied into bin/aether/"
+          }
+          if (-not (Test-Path "$binDir/psiphon/psiphon.exe")) {
+            throw "psiphon.exe was not found or copied into bin/psiphon/"
+          }
+          if (-not (Test-Path "$binDir/sni-spoofing/sni-spoof-rs.exe")) {
+            throw "sni-spoof-rs.exe was not found in bin/sni-spoofing/"
+          }
+          if (-not (Test-Path "$binDir/sni-spoofing/sni-spoofing.exe")) {
+            throw "sni-spoofing.exe was not found in bin/sni-spoofing/"
+          }
+
+          Write-Host "Verifying bundled core versions:"
+          & "$binDir/xray/xray.exe" version
+          & "$binDir/sing_box/sing-box.exe" version
+          & "$binDir/mihomo/mihomo.exe" -v
+          & "$binDir/aether/aether.exe" --version
+
+          # Download official rules containing gfw, geolocation-!cn, etc.
+          Write-Host "Downloading geo rules..."
+          curl.exe -L -s -o "$binDir/geosite.dat" "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
+          curl.exe -L -s -o "$binDir/geoip.dat" "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
+          Copy-Item -Path "$binDir/geosite.dat" -Destination "$binDir/xray/" -Force
+          Copy-Item -Path "$binDir/geoip.dat" -Destination "$binDir/xray/" -Force
+
+          # Cleanup download artifacts
+          Remove-Item -Path $coreZip, "core-extracted", $xrayZip, "xray-extracted", $singZip, "sing-extracted", $mihomoZip, "mihomo-extracted", $aetherZip, "aether-extracted" -Recurse -Force -ErrorAction SilentlyContinue
+
+      - name: Package Zip Archive
+        shell: pwsh
+        run: |
+          $outDir = "./dist/MehrON-windows-64"
+          $zipPath = "./MehrON-windows-64.zip"
+          if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+          Compress-Archive -Path "$outDir/*" -DestinationPath $zipPath -Force
+          $size = (Get-Item $zipPath).Length / 1MB
+          Write-Host ("Created archive: {0} ({1:N2} MB)" -f $zipPath, $size)
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MehrON-windows-64
+          path: ./dist/MehrON-windows-64
+          if-no-files-found: error
+
+  build-linux:
+    name: Build Linux x64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Resolve Version
+        id: version_step
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            tag="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.release_tag }}" ]; then
+            tag="${{ inputs.release_tag }}"
+            [[ "$tag" == v* ]] || tag="v$tag"
+          else
+            v=$(grep -oPm1 "(?<=<Version>)[^<]+" ./v2rayN/Directory.Build.props)
+            ref="${{ github.ref_name }}"
+            if [ "$ref" = "Beta" ] && [[ "$v" != *"-beta"* ]]; then
+              tag="v$v-beta"
+            else
+              tag="v$v"
+            fi
+          fi
+          echo "Resolved Version Tag: $tag"
+          echo "TAG_NAME=$tag" >> $GITHUB_ENV
+
+      - name: Build & Publish MehrON Desktop (Linux)
+        run: |
+          outDir="./dist/MehrON-linux-64"
+          mkdir -p "$outDir"
+          dotnet publish ./v2rayN/v2rayN.Desktop/v2rayN.Desktop.csproj \
+            -c Release \
+            -r linux-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:DebugType=none \
+            -p:DebugSymbols=false \
+            -o "$outDir"
+
+          dotnet publish ./v2rayN/AmazTool/AmazTool.csproj \
+            -c Release \
+            -r linux-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:DebugType=none \
+            -p:DebugSymbols=false \
+            -o "$outDir"
+
+          # Remove debug symbols if any
+          find "$outDir" -name "*.pdb" -type f -delete
+
+          if [ ! -f "$outDir/MehrON" ]; then
+            echo "MehrON was not built or found in $outDir" >&2
+            exit 1
+          fi
+          if [ ! -f "$outDir/AmazTool" ]; then
+            echo "AmazTool was not built or found in $outDir" >&2
+            exit 1
+          fi
+
+          chmod +x "$outDir/MehrON"
+          chmod +x "$outDir/AmazTool"
+
+      - name: Bundle Linux Core Binaries
+        run: |
+          outDir="$(pwd)/dist/MehrON-linux-64"
+          binDir="$outDir/bin"
+          mkdir -p "$binDir/xray" "$binDir/sing_box" "$binDir/mihomo" "$binDir/aether" "$binDir/psiphon"
+
+          # Download latest Xray-core (Linux 64)
+          echo "Downloading latest Xray-core..."
+          curl -fsSL "https://github.com/patterniha/Xray-core/releases/latest/download/Xray-linux-64.zip" -o xray-linux.zip
+          unzip -q xray-linux.zip -d xray-extracted
+          cp -f xray-extracted/xray "$binDir/xray/xray"
+          chmod +x "$binDir/xray/xray"
+          [ -f xray-extracted/geosite.dat ] && cp -f xray-extracted/geosite.dat "$binDir/"
+          [ -f xray-extracted/geoip.dat ] && cp -f xray-extracted/geoip.dat "$binDir/"
+          [ -f xray-extracted/geosite.dat ] && cp -f xray-extracted/geosite.dat "$binDir/xray/"
+          [ -f xray-extracted/geoip.dat ] && cp -f xray-extracted/geoip.dat "$binDir/xray/"
+          rm -rf xray-linux.zip xray-extracted
+
+          # Download latest sing-box (Linux amd64)
+          echo "Downloading latest sing-box..."
+          curl -fsSL "https://github.com/SagerNet/sing-box/releases/download/v1.14.4/sing-box-1.14.4-linux-amd64.tar.gz" -o sing-box.tar.gz
+          mkdir -p sing-extracted
+          tar -xzf sing-box.tar.gz -C sing-extracted
+          singExe=$(find sing-extracted -type f -name "sing-box" | head -n 1)
+          if [ -n "$singExe" ]; then
+            cp -f "$singExe" "$binDir/sing_box/sing-box"
+            chmod +x "$binDir/sing_box/sing-box"
+          fi
+          rm -rf sing-box.tar.gz sing-extracted
+
+          # Download latest mihomo (Linux amd64)
+          echo "Downloading latest mihomo..."
+          curl -fsSL "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.33/mihomo-linux-amd64-compatible-v1.19.33.gz" -o mihomo.gz
+          gzip -d mihomo.gz
+          cp -f mihomo "$binDir/mihomo/mihomo"
+          chmod +x "$binDir/mihomo/mihomo"
+          rm -f mihomo
+
+          # Download latest Aether (Linux x86_64)
+          echo "Downloading latest Aether..."
+          curl -fsSL "https://github.com/CluvexStudio/Aether/releases/latest/download/aether-linux-x86_64.tar.gz" -o aether.tar.gz
+          mkdir -p aether-extracted
+          tar -xzf aether.tar.gz -C aether-extracted
+          aetherExe=$(find aether-extracted -type f -name "aether" | head -n 1)
+          if [ -n "$aetherExe" ]; then
+            cp -f "$aetherExe" "$binDir/aether/aether"
+            chmod +x "$binDir/aether/aether"
+            aetherDir=$(dirname "$aetherExe")
+            if [ -d "$aetherDir/pt" ]; then
+              cp -rf "$aetherDir/pt" "$binDir/aether/"
+              find "$binDir/aether/pt" -type f -exec chmod +x {} + || true
+            fi
+          fi
+          rm -rf aether.tar.gz aether-extracted
+
+          # Build latest psiphon-tunnel-core from shirokhorshid fork (Linux amd64)
+          echo "Building psiphon-tunnel-core from shirokhorshid fork..."
+          git clone --depth 1 https://github.com/shirokhorshid/psiphon-tunnel-core.git psiphon-src
+          unsafeFile="psiphon-src/vendor/github.com/Psiphon-Labs/psiphon-tls/unsafe.go"
+          if [ -f "$unsafeFile" ]; then
+            sed -i 's|panic(fmt.Sprintf("tls: ConnectionState|// panic(fmt.Sprintf("tls: ConnectionState|g' "$unsafeFile"
+          fi
+          cd psiphon-src/ConsoleClient
+          go build -ldflags "-s -w" -o "$binDir/psiphon/psiphon" .
+          cd ../..
+          chmod +x "$binDir/psiphon/psiphon"
+          cp -f "$binDir/psiphon/psiphon" "$binDir/psiphon/psiphon-tunnel-core"
+          cp -f "./v2rayN/ServiceLib/Sample/psiphon_server_list" "$binDir/psiphon/server_list.dat"
+          rm -rf psiphon-src
+
+          # Verify bundled core versions
+          if [ ! -f "$binDir/xray/xray" ]; then echo "xray was not found!" >&2; exit 1; fi
+          if [ ! -f "$binDir/sing_box/sing-box" ]; then echo "sing-box was not found!" >&2; exit 1; fi
+          if [ ! -f "$binDir/mihomo/mihomo" ]; then echo "mihomo was not found!" >&2; exit 1; fi
+          if [ ! -f "$binDir/aether/aether" ]; then echo "aether was not found!" >&2; exit 1; fi
+          if [ ! -f "$binDir/psiphon/psiphon" ]; then echo "psiphon was not found!" >&2; exit 1; fi
+
+          echo "Verifying bundled core versions:"
+          "$binDir/xray/xray" version
+          "$binDir/sing_box/sing-box" version
+          "$binDir/mihomo/mihomo" -v
+          "$binDir/aether/aether" --version
+
+          # Download official geo rules
+          echo "Downloading geo rules..."
+          curl -fsSL "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat" -o "$binDir/geosite.dat"
+          curl -fsSL "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat" -o "$binDir/geoip.dat"
+          cp -f "$binDir/geosite.dat" "$binDir/xray/"
+          cp -f "$binDir/geoip.dat" "$binDir/xray/"
+
+          # Download Iran sing-box srs rules
+          mkdir -p "$binDir/srss"
+          curl -fsSL "https://raw.githubusercontent.com/chocolate4u/Iran-sing-box-rules/rule-set/geosite-category-ir.srs" -o "$binDir/srss/geosite-category-ir.srs" || true
+          curl -fsSL "https://raw.githubusercontent.com/chocolate4u/Iran-sing-box-rules/rule-set/geoip-ir.srs" -o "$binDir/srss/geoip-ir.srs" || true
+
+      - name: Build Debian (.deb) Package
+        run: |
+          cleanVer="${TAG_NAME#v}"
+          cleanVer="${cleanVer%-beta}"
+          debRoot="./deb-staging"
+          rm -rf "$debRoot"
+          mkdir -p "$debRoot/DEBIAN"
+          mkdir -p "$debRoot/opt/MehrON"
+          mkdir -p "$debRoot/usr/bin"
+          mkdir -p "$debRoot/usr/share/applications"
+          mkdir -p "$debRoot/usr/share/pixmaps"
+          mkdir -p "$debRoot/usr/share/icons/hicolor/512x512/apps"
+
+          # Control file
+          printf '%s\n' \
+            "Package: mehron" \
+            "Version: ${cleanVer}" \
+            "Section: net" \
+            "Priority: optional" \
+            "Architecture: amd64" \
+            "Maintainer: MehrON Contributors <https://github.com/yastorovsky/MehrON>" \
+            "Description: MehrON is a fast and modern GUI proxy client." \
+            " Cross-platform desktop proxy client supporting Xray, sing-box, mihomo, and Aether." \
+            > "$debRoot/DEBIAN/control"
+
+          # Copy application payload to /opt/MehrON
+          cp -rf ./dist/MehrON-linux-64/* "$debRoot/opt/MehrON/"
+
+          # Desktop launcher
+          printf '%s\n' \
+            "[Desktop Entry]" \
+            "Name=MehrON" \
+            "Comment=MehrON Proxy Client" \
+            "Exec=/opt/MehrON/MehrON %u" \
+            "Icon=MehrON" \
+            "Terminal=false" \
+            "Type=Application" \
+            "Categories=Network;Proxy;" \
+            "StartupNotify=true" \
+            "StartupWMClass=MehrON" \
+            > "$debRoot/usr/share/applications/MehrON.desktop"
+
+          # CLI Wrapper
+          printf '%s\n' \
+            '#!/bin/bash' \
+            'exec /opt/MehrON/MehrON "$@"' \
+            > "$debRoot/usr/bin/MehrON"
+          chmod 755 "$debRoot/usr/bin/MehrON"
+          chmod 644 "$debRoot/usr/share/applications/MehrON.desktop"
+
+          # Icons
+          if [ -f "./v2rayN/v2rayN.Desktop/Assets/MehrON-logo.png" ]; then
+            cp -f "./v2rayN/v2rayN.Desktop/Assets/MehrON-logo.png" "$debRoot/usr/share/pixmaps/MehrON.png"
+            cp -f "./v2rayN/v2rayN.Desktop/Assets/MehrON-logo.png" "$debRoot/usr/share/icons/hicolor/512x512/apps/MehrON.png"
+          fi
+
+          # Fix permissions
+          chmod -R u=rwX,go=rX "$debRoot"
+          chmod 755 "$debRoot/DEBIAN"
+          chmod 755 "$debRoot/opt/MehrON/MehrON"
+          chmod 755 "$debRoot/opt/MehrON/AmazTool" || true
+          find "$debRoot/opt/MehrON/bin" -type f -exec chmod 755 {} + || true
+
+          # Build package
+          dpkg-deb --build --root-owner-group "$debRoot" "./MehrON-linux-amd64.deb"
+          cp -f "./MehrON-linux-amd64.deb" "./dist/MehrON-linux-64/MehrON-linux-amd64.deb"
+          cp -f "./MehrON-linux-amd64.deb" "./dist/MehrON-linux-64/MehrON-linux-64.deb"
+          echo "Built Debian package: MehrON-linux-amd64.deb ($(du -h MehrON-linux-amd64.deb | cut -f1))"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MehrON-linux-64
+          path: ./dist/MehrON-linux-64
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish Release
+    needs: [build-windows, build-linux]
+    if: github.ref_type == 'tag' || inputs.create_release == true || github.ref_name == 'main' || github.ref_name == 'Beta'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve Version
+        id: version_step
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            tag="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.release_tag }}" ]; then
+            tag="${{ inputs.release_tag }}"
+            [[ "$tag" == v* ]] || tag="v$tag"
+          else
+            v=$(grep -oPm1 "(?<=<Version>)[^<]+" ./v2rayN/Directory.Build.props)
+            ref="${{ github.ref_name }}"
+            if [ "$ref" = "Beta" ] && [[ "$v" != *"-beta"* ]]; then
+              tag="v$v-beta"
+            else
+              tag="v$v"
+            fi
+          fi
+          echo "Resolved Version Tag: $tag"
+          echo "TAG_NAME=$tag" >> $GITHUB_ENV
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: MehrON-windows-64
+          path: ./dist/MehrON-windows-64
+
+      - name: Download Linux Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: MehrON-linux-64
+          path: ./dist/MehrON-linux-64
+
+      - name: Package Release Archives
+        run: |
+          # Package Windows Zip
+          (cd ./dist/MehrON-windows-64 && zip -q -r ../../MehrON-windows-64.zip .)
+          echo "Windows package: MehrON-windows-64.zip ($(du -h MehrON-windows-64.zip | cut -f1))"
+
+          # Extract .deb package before zipping linux directory
+          if [ -f "./dist/MehrON-linux-64/MehrON-linux-amd64.deb" ]; then
+            cp -f "./dist/MehrON-linux-64/MehrON-linux-amd64.deb" "./MehrON-linux-amd64.deb"
+            cp -f "./dist/MehrON-linux-64/MehrON-linux-64.deb" "./MehrON-linux-64.deb"
+            rm -f "./dist/MehrON-linux-64/MehrON-linux-amd64.deb" "./dist/MehrON-linux-64/MehrON-linux-64.deb"
+            echo "Extracted Debian package: MehrON-linux-amd64.deb ($(du -h MehrON-linux-amd64.deb | cut -f1))"
+          fi
+
+          # Fix Linux permissions and package tar.gz & zip
+          chmod +x ./dist/MehrON-linux-64/MehrON || true
+          chmod +x ./dist/MehrON-linux-64/AmazTool || true
+          find ./dist/MehrON-linux-64/bin -type f -exec chmod +x {} + || true
+          tar -czf ./MehrON-linux-64.tar.gz -C ./dist/MehrON-linux-64 .
+          (cd ./dist/MehrON-linux-64 && zip -q -r ../../MehrON-linux-64.zip .)
+          cp -f ./MehrON-linux-64.tar.gz ./MehrON-FM-Edition-nixos-64.tar.gz
+          echo "Linux package: MehrON-linux-64.tar.gz ($(du -h MehrON-linux-64.tar.gz | cut -f1))"
+          echo "Linux package: MehrON-linux-64.zip ($(du -h MehrON-linux-64.zip | cut -f1))"
+          echo "NixOS FM Edition package: MehrON-FM-Edition-nixos-64.tar.gz ($(du -h MehrON-FM-Edition-nixos-64.tar.gz | cut -f1))"
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.TAG_NAME }}
+          target_commitish: ${{ github.ref_name }}
+          body: |
+            ## MehrON ${{ env.TAG_NAME }} (FM Edition)
+
+            ### ✨ Improvements & Highlights
+            - **🌸 FM Edition Branding**: Special edition branding across application interface, CLI versioning, and desktop entries.
+            - **❄️ First-Class NixOS Support**: Native integration via Nix Flakes, derivation, and NixOS module.
+            - **⚡ Native Architecture**: Unified and refined native runtime for Windows and Linux (Ubuntu / Debian / NixOS).
+            - **🐧 Linux (Ubuntu / Debian x64) Support**: Native cross-platform desktop client release with bundled Linux cores, portable archives, and official .deb package.
+            - **🌐 Aether Engine Integration**: Built-in support, dedicated 1-click server window, and distribution for the Aether censorship circumvention core (MASQUE, WireGuard, and pluggable transports).
+            - **🌀 Psiphon Integration (shirokhorshid fork)**: Built-in Psiphon core support, dedicated 1-click server window, configurable egress regions, and controllable CDN Fronting support (user-provided edge IPs/CIDRs/SNI) accessible both per-server and globally via Psiphon Settings.
+            - **🧠 Memory & Performance Optimizations**: Active working-set management and dynamic heap tuning for a lightweight background footprint.
+            - **🎨 UI Polish & Stability**: Refined interface components, enhanced status indicators, and general stability improvements.
+            - **📦 Core Engines & Routing**: Updated high-performance core binaries and latest geo-routing rules.
+
+            ---
+            *Platforms: Windows x64 (Portable), Linux x64 (Ubuntu / Debian .deb & portable), NixOS (MehrON-FM-Edition-nixos-64.tar.gz & Flake)*
+          files: |
+            MehrON-windows-64.zip
+            MehrON-linux-64.tar.gz
+            MehrON-linux-64.zip
+            MehrON-linux-amd64.deb
+            MehrON-linux-64.deb
+            MehrON-FM-Edition-nixos-64.tar.gz
+          draft: false
+          prerelease: ${{ github.ref_name == 'Beta' }}

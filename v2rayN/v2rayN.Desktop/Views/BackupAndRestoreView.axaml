@@ -1,0 +1,383 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.BackupAndRestoreView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Design.DataContext="{x:Static dd:DesignData.BackupAndRestore}"
+    mc:Ignorable="d">
+
+    <Border
+        Background="{DynamicResource GlassDrawerBrush}"
+        BorderBrush="{DynamicResource GlassBorderBrush}"
+        BorderThickness="1"
+        ClipToBounds="True"
+        CornerRadius="14">
+    <DockPanel Margin="12,12,12,12">
+        <Grid
+            Margin="4,2,4,10"
+            ColumnDefinitions="*,Auto"
+            DockPanel.Dock="Top">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+                <TextBlock Classes="PageTitle" Text="Backup &amp; restore" />
+                <TextBlock Classes="PageSubtitle" Text="Keep a portable copy of your servers, subscriptions and settings." />
+            </StackPanel>
+            <Border
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Classes="ActivePill">
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                    <Ellipse
+                        Width="6"
+                        Height="6"
+                        VerticalAlignment="Center"
+                        Fill="{DynamicResource GlassPresenceBrush}" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="10.5"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="Local + WebDAV" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border
+            Margin="4,6,4,0"
+            Padding="14,10"
+            Classes="GlassInset"
+            DockPanel.Dock="Bottom">
+            <StackPanel Orientation="Horizontal" Spacing="9">
+                <PathIcon
+                    Width="15"
+                    Height="15"
+                    VerticalAlignment="Center"
+                    Data="{StaticResource SemiIconInfoCircle}"
+                    Foreground="{DynamicResource GlassThemeIconBrush}" />
+                <TextBlock
+                    Name="txtMsg"
+                    VerticalAlignment="Center"
+                    Classes="PageSubtitle"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <Grid ColumnDefinitions="*,*">
+                    <Border
+                        Grid.Column="0"
+                        Margin="4"
+                        Padding="16"
+                        Classes="GlassInset">
+                        <StackPanel Spacing="4">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border
+                                    Width="36"
+                                    Height="36"
+                                    VerticalAlignment="Center"
+                                    Background="{DynamicResource GlassChipBrush}"
+                                    BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                    <PathIcon
+                                        Width="18"
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="{StaticResource SemiIconServerStroked}"
+                                        Foreground="{DynamicResource GlassThemeIconBrush}" />
+                                </Border>
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Spacing="1">
+                                    <TextBlock
+                                        FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                        Text="On this device" />
+                                    <TextBlock
+                                        Classes="PageSubtitle"
+                                        Text="A complete snapshot saved to disk." />
+                                </StackPanel>
+                            </Grid>
+
+                            <Border
+                                Height="1"
+                                Margin="0,10"
+                                Background="{DynamicResource GlassHairlineBrush}" />
+
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <TextBlock
+                                    FontSize="12.5"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="Backup" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,2,12,0"
+                                    Classes="PageSubtitle"
+                                    Text="Write a .zip of servers, groups and settings."
+                                    TextWrapping="Wrap" />
+                                <Button
+                                    Name="menuLocalBackup"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="1"
+                                    MinWidth="180"
+                                    VerticalAlignment="Center"
+                                    Classes="Primary"
+                                    Content="{x:Static resx:ResUI.menuLocalBackup}" />
+                            </Grid>
+
+                            <Border
+                                Height="1"
+                                Margin="0,10"
+                                Background="{DynamicResource GlassHairlineBrush}" />
+
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <TextBlock
+                                    FontSize="12.5"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="Restore" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,2,12,0"
+                                    Classes="PageSubtitle"
+                                    Text="Pick a backup file and roll everything back."
+                                    TextWrapping="Wrap" />
+                                <Button
+                                    Name="menuLocalRestore"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="1"
+                                    MinWidth="180"
+                                    VerticalAlignment="Center"
+                                    Classes="Soft"
+                                    Content="{x:Static resx:ResUI.menuLocalRestore}" />
+                            </Grid>
+
+                            <TextBlock
+                                Margin="0,12,0,0"
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Restoring replaces current data and restarts ArON."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border
+                        Grid.Column="1"
+                        Margin="4"
+                        Padding="16"
+                        Classes="GlassInset">
+                        <StackPanel Spacing="4">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border
+                                    Width="36"
+                                    Height="36"
+                                    VerticalAlignment="Center"
+                                    Background="{DynamicResource GlassChipBrush}"
+                                    BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                    <PathIcon
+                                        Width="18"
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="{StaticResource SemiIconCloudStroked}"
+                                        Foreground="{DynamicResource GlassThemeIconBrush}" />
+                                </Border>
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Spacing="1">
+                                    <TextBlock
+                                        FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                        Text="WebDAV cloud" />
+                                    <TextBlock
+                                        Classes="PageSubtitle"
+                                        Text="Sync snapshots through your own storage." />
+                                </StackPanel>
+                                <Button
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Classes="IconButton ToolGlass"
+                                    ToolTip.Tip="WebDAV settings">
+                                    <Button.Content>
+                                        <PathIcon Data="{StaticResource SemiIconSettingStroked}" />
+                                    </Button.Content>
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <StackPanel>
+                                                <Grid ColumnDefinitions="Auto,300" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                                                    <TextBlock
+                                                        Grid.Row="0"
+                                                        Grid.Column="0"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center"
+                                                        Text="{x:Static resx:ResUI.LvWebDavUrl}" />
+                                                    <TextBox
+                                                        x:Name="txtWebDavUrl"
+                                                        Grid.Row="0"
+                                                        Grid.Column="1"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center"
+                                                        TextWrapping="Wrap" />
+                                                    <TextBlock
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center"
+                                                        Text="{x:Static resx:ResUI.LvWebDavUserName}" />
+                                                    <TextBox
+                                                        x:Name="txtWebDavUserName"
+                                                        Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        Grid.Row="2"
+                                                        Grid.Column="0"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center"
+                                                        Text="{x:Static resx:ResUI.LvWebDavPassword}" />
+                                                    <TextBox
+                                                        x:Name="txtWebDavPassword"
+                                                        Grid.Row="2"
+                                                        Grid.Column="1"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        Grid.Row="3"
+                                                        Grid.Column="0"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center"
+                                                        Text="{x:Static resx:ResUI.LvWebDavDirName}" />
+                                                    <TextBox
+                                                        x:Name="txtWebDavDirName"
+                                                        Grid.Row="3"
+                                                        Grid.Column="1"
+                                                        Margin="{StaticResource Margin4}"
+                                                        VerticalAlignment="Center" />
+                                                    <Button
+                                                        x:Name="menuWebDavCheck"
+                                                        Grid.Row="4"
+                                                        Grid.Column="1"
+                                                        Margin="{StaticResource Margin4}"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center"
+                                                        Classes="Soft"
+                                                        Content="{x:Static resx:ResUI.LvWebDavCheck}" />
+                                                </Grid>
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </Grid>
+
+                            <Border
+                                Height="1"
+                                Margin="0,10"
+                                Background="{DynamicResource GlassHairlineBrush}" />
+
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <TextBlock
+                                    FontSize="12.5"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="Remote backup" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,2,12,0"
+                                    Classes="PageSubtitle"
+                                    Text="Upload a fresh snapshot to WebDAV."
+                                    TextWrapping="Wrap" />
+                                <Button
+                                    Name="menuRemoteBackup"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="1"
+                                    MinWidth="180"
+                                    VerticalAlignment="Center"
+                                    Classes="Primary"
+                                    Content="{x:Static resx:ResUI.menuRemoteBackup}" />
+                            </Grid>
+
+                            <Border
+                                Height="1"
+                                Margin="0,10"
+                                Background="{DynamicResource GlassHairlineBrush}" />
+
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <TextBlock
+                                    FontSize="12.5"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="Remote restore" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,2,12,0"
+                                    Classes="PageSubtitle"
+                                    Text="Download the latest snapshot and restore it."
+                                    TextWrapping="Wrap" />
+                                <Button
+                                    Name="menuRemoteRestore"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="1"
+                                    MinWidth="180"
+                                    VerticalAlignment="Center"
+                                    Classes="Soft"
+                                    Content="{x:Static resx:ResUI.menuRemoteRestore}" />
+                            </Grid>
+
+                            <TextBlock
+                                Margin="0,12,0,0"
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Test the connection in WebDAV settings before the first upload."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border
+                    Margin="4,8,4,0"
+                    Padding="14,10"
+                    Classes="GlassInset">
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                        <PathIcon
+                            Grid.RowSpan="2"
+                            Width="16"
+                            Height="16"
+                            Margin="0,1,10,0"
+                            VerticalAlignment="Top"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            Grid.Column="1"
+                            FontSize="12"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                            Text="What gets included" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,2,0,0"
+                            Classes="PageSubtitle"
+                            Text="Servers, subscription groups, routing rules, DNS settings, preferences and statistics are bundled together."
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+    </Border>
+</UserControl>

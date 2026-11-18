@@ -1,0 +1,276 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.DoubleTunnelWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:ServiceLib.Models.Entities;assembly=ServiceLib"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.DoubleTunnelTitle}"
+    Width="780"
+    Height="640"
+    MinWidth="700"
+    MinHeight="560"
+    x:DataType="vms:DoubleTunnelViewModel"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconShare}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1" MaxWidth="560">
+                            <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.DoubleTunnelTitle}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Route local traffic through an entry server to an exit server."
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="2-hop chain" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="The middle server must allow outbound traffic." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="128"
+                            Classes="Primary"
+                            Content="Create chain"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,10,10,4" Spacing="0">
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="ROUTE" />
+                            <Grid
+                                ColumnDefinitions="Auto,*,Auto,*,Auto,Auto"
+                                VerticalAlignment="Center">
+                                <Border
+                                    Padding="12,8"
+                                    Classes="GlassInset"
+                                    CornerRadius="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="7">
+                                        <PathIcon
+                                            Width="14"
+                                            Height="14"
+                                            Data="{StaticResource SemiIconTerminal}"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}" />
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontSize="11.5"
+                                            FontWeight="SemiBold"
+                                            Text="This device" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="13"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Text="→" />
+                                <Border
+                                    Grid.Column="2"
+                                    Padding="12,8"
+                                    BorderBrush="{DynamicResource GlassBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="7">
+                                        <PathIcon
+                                            Width="14"
+                                            Height="14"
+                                            Data="{StaticResource SemiIconServerStroked}"
+                                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontSize="11.5"
+                                            FontWeight="SemiBold"
+                                            Text="Middle server" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="13"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Text="→" />
+                                <Border
+                                    Grid.Column="4"
+                                    Padding="12,8"
+                                    BorderBrush="{DynamicResource GlassBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="7">
+                                        <PathIcon
+                                            Width="14"
+                                            Height="14"
+                                            Data="{StaticResource SemiIconGlobeStroked}"
+                                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontSize="11.5"
+                                            FontWeight="SemiBold"
+                                            Text="Exit server" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock
+                                    Grid.Column="5"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    FontSize="11.5"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Text="Internet" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="CHAIN SETUP" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="210,*">
+                                <TextBlock Classes="FieldLabel" Text="Middle server" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="Select a server"
+                                    ItemsSource="{Binding Servers}"
+                                    SelectedItem="{Binding SelectedMiddleServer}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="model:ProfileItem">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock FontWeight="Medium" Text="{Binding Remarks}" />
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontSize="11"
+                                                    Opacity="0.6"
+                                                    Text="{Binding ConfigType, StringFormat='({0})'}" />
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontSize="11"
+                                                    Opacity="0.4"
+                                                    Text="{Binding Address}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="210,*">
+                                <TextBlock Classes="FieldLabel" Text="Exit server" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="Select a server"
+                                    ItemsSource="{Binding Servers}"
+                                    SelectedItem="{Binding SelectedExitServer}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="model:ProfileItem">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock FontWeight="Medium" Text="{Binding Remarks}" />
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontSize="11"
+                                                    Opacity="0.6"
+                                                    Text="{Binding ConfigType, StringFormat='({0})'}" />
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontSize="11"
+                                                    Opacity="0.4"
+                                                    Text="{Binding Address}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="210,*">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbRemarks}" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    Text="{Binding Remarks}"
+                                    PlaceholderText="Name this chain" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="210,*">
+                                <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbCoreType}" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    Width="220"
+                                    HorizontalAlignment="Left"
+                                    ItemsSource="{Binding CoreTypes}"
+                                    SelectedItem="{Binding CoreType}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

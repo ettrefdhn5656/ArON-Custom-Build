@@ -1,0 +1,612 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.DNSSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:local="using:v2rayN.Desktop.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuDNSSetting}"
+    Width="980"
+    Height="680"
+    MinWidth="860"
+    MinHeight="560"
+    x:DataType="vms:DNSSettingViewModel"
+    Design.DataContext="{x:Static dd:DesignData.DNSSetting}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <conv:EmptyTextConverter x:Key="StrategyTextConverter" />
+    </Window.Resources>
+
+    <Window.Styles>
+    </Window.Styles>
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconServerStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.menuDNSSetting}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Choose how domains resolve inside and outside the tunnel." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Xray + sing-box" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Changes take effect on the next connection." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="Cancel"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="120"
+                            Classes="Primary"
+                            Content="Save changes"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <TabControl
+                x:Name="tabsDns"
+                Classes="GlassTabs"
+                HorizontalContentAlignment="Stretch">
+                <TabItem Header="{x:Static resx:ResUI.ThBasicDNSSettings}">
+                    <ScrollViewer x:Name="scrollBasicDns" VerticalScrollBarVisibility="Auto">
+                        <StackPanel
+                            x:Name="gridBasicDNSSettings"
+                            Margin="8,8,8,0">
+                            <TextBlock
+                                x:Name="txtBasicDNSSettingsInvalid"
+                                Margin="8,2,8,6"
+                                Classes="FieldHint"
+                                Foreground="{DynamicResource GlassDangerBrush}"
+                                Text="{x:Static resx:ResUI.TbCustomDNSEnabledPageInvalid}" />
+
+                            <Border Classes="FormCard">
+                                <StackPanel>
+                                    <TextBlock Classes="SectionLabel" Text="RESOLVERS" />
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbDomesticDNS}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbDomesticDNSTips}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbDirectDNS"
+                                            Grid.Column="1"
+                                            Width="300"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            IsEditable="True" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbRemoteDNS}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbRemoteDNSTips}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbRemoteDNS"
+                                            Grid.Column="1"
+                                            Width="300"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            IsEditable="True" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbBootstrapDNS}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbBootstrapDNSTips}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbBootstrapDNS"
+                                            Grid.Column="1"
+                                            Width="300"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            IsEditable="True" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="FormCard">
+                                <StackPanel>
+                                    <TextBlock Classes="SectionLabel" Text="RESOLUTION STRATEGY" />
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbDirectResolveStrategy}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbDirectResolveStrategyTips}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbDirectDNSStrategy"
+                                            Grid.Column="1"
+                                            Width="200"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            PlaceholderText="Default" >
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbRemoteResolveStrategy}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbRemoteResolveStrategyTips}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbRemoteDNSStrategy"
+                                            Grid.Column="1"
+                                            Width="200"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            PlaceholderText="Default" >
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbProxyDialResolveStrategy}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbProxyDialResolveStrategyTip}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbProxyDialDNSStrategy"
+                                            Grid.Column="1"
+                                            Width="200"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            PlaceholderText="Default" >
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="FormCard">
+                                <StackPanel>
+                                    <TextBlock Classes="SectionLabel" Text="RESOLVER BEHAVIOR" />
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbParallelQuery}" />
+                                        <ToggleSwitch
+                                            x:Name="togParallelQuery"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbServeStale}" />
+                                        <ToggleSwitch
+                                            x:Name="togServeStale"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbEnableHappyEyeballs}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbEnableHappyEyeballsTip}" />
+                                        </StackPanel>
+                                        <ToggleSwitch
+                                            x:Name="togEnableHappyEyeballs"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="{x:Static resx:ResUI.ThAdvancedDNSSettings}">
+                    <ScrollViewer x:Name="scrollAdvancedDns" VerticalScrollBarVisibility="Auto">
+                        <StackPanel
+                            x:Name="gridAdvancedDNSSettings"
+                            Margin="8,8,8,0">
+                            <TextBlock
+                                x:Name="txtAdvancedDNSSettingsInvalid"
+                                Margin="8,2,8,6"
+                                Classes="FieldHint"
+                                Foreground="{DynamicResource GlassDangerBrush}"
+                                Text="{x:Static resx:ResUI.TbCustomDNSEnabledPageInvalid}" />
+
+                            <Border Classes="FormCard">
+                                <StackPanel>
+                                    <TextBlock Classes="SectionLabel" Text="HOSTS &amp; FAKE IP" />
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbSettingsUseSystemHosts}" />
+                                        <ToggleSwitch
+                                            x:Name="togUseSystemHosts"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbAddCommonDNSHosts}" />
+                                        <ToggleSwitch
+                                            x:Name="togAddCommonHosts"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbFakeIP}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbFakeIPTips}" />
+                                        </StackPanel>
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal"
+                                            Spacing="10">
+                                            <ToggleSwitch
+                                                x:Name="togFakeIP"
+                                                VerticalAlignment="Center" />
+                                            <ComboBox
+                                                x:Name="cmbFakeIPRange"
+                                                Width="220"
+                                                VerticalAlignment="Center"
+                                                IsEditable="True" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="FormCard">
+                                <StackPanel>
+                                    <TextBlock Classes="SectionLabel" Text="QUERY FILTERING" />
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbBlockSVCBHTTPSQueries}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbBlockSVCBHTTPSQueriesTips}" />
+                                        </StackPanel>
+                                        <ToggleSwitch
+                                            x:Name="togBlockBindingQuery"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbBlockAAAAQueries}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbBlockAAAAQueriesTips}" />
+                                        </StackPanel>
+                                        <ToggleSwitch
+                                            x:Name="togBlockAAAAQuery"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Classes="FormRow" ColumnDefinitions="240,*">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbValidateDirectExpectedIPs}" />
+                                            <TextBlock Classes="FieldHint" Text="{x:Static resx:ResUI.TbValidateDirectExpectedIPsDesc}" />
+                                        </StackPanel>
+                                        <ComboBox
+                                            x:Name="cmbDirectExpectedIPs"
+                                            Grid.Column="1"
+                                            Width="220"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            IsEditable="True" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="FormCard">
+                                <StackPanel>
+                                    <TextBlock Classes="SectionLabel" Text="HOSTS FILE" />
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        Classes="FieldHint"
+                                        Text="{x:Static resx:ResUI.TbDNSHostsConfig}" />
+                                    <TextBox
+                                        x:Name="txtHosts"
+                                        MinHeight="180"
+                                        Classes="TextArea"
+                                        PlaceholderText="{x:Static resx:ResUI.TbDNSHostsConfig}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="{x:Static resx:ResUI.TbCustomDnsRay}">
+                    <DockPanel Margin="8,8,8,0">
+                        <StackPanel DockPanel.Dock="Top">
+                            <Border Classes="FormCard">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbCustomDNSEnable}" />
+                                            <ToggleSwitch
+                                                x:Name="togRayCustomDNSEnableCompatible"
+                                                VerticalAlignment="Center" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            Classes="FieldHint"
+                                            Text="Override the simple resolver with a full Xray DNS JSON object." />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal"
+                                        Spacing="4">
+                                        <HyperlinkButton Click="linkDnsObjectDoc_Click">
+                                            <TextBlock Text="{x:Static resx:ResUI.TbDnsObjectDoc}" />
+                                        </HyperlinkButton>
+                                        <Button
+                                            x:Name="btnImportDefConfig4V2rayCompatible"
+                                            Classes="Soft"
+                                            Content="{x:Static resx:ResUI.TbSettingDnsImportDefConfig}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="FormCard">
+                                <WrapPanel>
+                                    <StackPanel
+                                        Margin="0,0,24,0"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,8,0"
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSettingsUseSystemHosts}" />
+                                        <ToggleSwitch
+                                            x:Name="togUseSystemHostsCompatible"
+                                            VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Margin="0,0,24,0"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,8,0"
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSettingsDomainStrategy4Freedom}" />
+                                        <ComboBox
+                                            x:Name="cmbdomainStrategy4FreedomCompatible"
+                                            Width="150"
+                                            VerticalAlignment="Center" >
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,8,0"
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSettingsDomainDNSAddress}" />
+                                        <ComboBox
+                                            x:Name="cmbdomainDNSAddressCompatible"
+                                            Width="170"
+                                            VerticalAlignment="Center"
+                                            IsEditable="True" />
+                                    </StackPanel>
+                                </WrapPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <Grid Margin="0,4,0,0" ColumnDefinitions="*,12,*">
+                            <Border
+                                Grid.Column="0"
+                                Padding="12,10"
+                                Classes="GlassInset">
+                                <DockPanel>
+                                    <TextBlock
+                                        Classes="StatLabel"
+                                        DockPanel.Dock="Top"
+                                        Text="HTTP / SOCKS" />
+                                    <local:JsonEditor
+                                        x:Name="txtnormalDNSCompatible"
+                                        Margin="0,8,0,0"
+                                        VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+                            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                            <Border
+                                Grid.Column="2"
+                                Padding="12,10"
+                                Classes="GlassInset">
+                                <DockPanel>
+                                    <TextBlock
+                                        Classes="StatLabel"
+                                        DockPanel.Dock="Top"
+                                        Text="{x:Static resx:ResUI.TbSettingsTunMode}" />
+                                    <local:JsonEditor
+                                        x:Name="txttunDNSCompatible"
+                                        Margin="0,8,0,0"
+                                        VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </DockPanel>
+                </TabItem>
+
+                <TabItem Header="{x:Static resx:ResUI.TbCustomDnsSingbox}">
+                    <DockPanel Margin="8,8,8,0">
+                        <StackPanel DockPanel.Dock="Top">
+                            <Border Classes="FormCard">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <TextBlock Classes="FieldLabel" Text="{x:Static resx:ResUI.TbCustomDNSEnable}" />
+                                            <ToggleSwitch
+                                                x:Name="togSBCustomDNSEnableCompatible"
+                                                VerticalAlignment="Center" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            Classes="FieldHint"
+                                            Text="Override the simple resolver with a full sing-box DNS JSON object." />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal"
+                                        Spacing="4">
+                                        <HyperlinkButton Click="linkDnsSingboxObjectDoc_Click">
+                                            <TextBlock Text="{x:Static resx:ResUI.TbDnsSingboxObjectDoc}" />
+                                        </HyperlinkButton>
+                                        <Button
+                                            x:Name="btnImportDefConfig4SingboxCompatible"
+                                            Classes="Soft"
+                                            Content="{x:Static resx:ResUI.TbSettingDnsImportDefConfig}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="FormCard">
+                                <WrapPanel>
+                                    <StackPanel
+                                        Margin="0,0,24,0"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,8,0"
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSettingsDomainStrategy4Out}" />
+                                        <ComboBox
+                                            x:Name="cmbdomainStrategy4OutCompatible"
+                                            Width="150"
+                                            VerticalAlignment="Center" >
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding Converter={StaticResource StrategyTextConverter}, ConverterParameter=Default}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,8,0"
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSettingsDomainDNSAddress}" />
+                                        <ComboBox
+                                            x:Name="cmbdomainDNSAddress2Compatible"
+                                            Width="170"
+                                            VerticalAlignment="Center"
+                                            IsEditable="True" />
+                                    </StackPanel>
+                                </WrapPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <Grid Margin="0,4,0,0" ColumnDefinitions="*,12,*">
+                            <Border
+                                Grid.Column="0"
+                                Padding="12,10"
+                                Classes="GlassInset">
+                                <DockPanel>
+                                    <TextBlock
+                                        Classes="StatLabel"
+                                        DockPanel.Dock="Top"
+                                        Text="HTTP / SOCKS" />
+                                    <local:JsonEditor
+                                        x:Name="txtnormalDNS2Compatible"
+                                        Margin="0,8,0,0"
+                                        VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+                            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                            <Border
+                                Grid.Column="2"
+                                Padding="12,10"
+                                Classes="GlassInset">
+                                <DockPanel>
+                                    <TextBlock
+                                        Classes="StatLabel"
+                                        DockPanel.Dock="Top"
+                                        Text="{x:Static resx:ResUI.TbSettingsTunMode}" />
+                                    <local:JsonEditor
+                                        x:Name="txttunDNS2Compatible"
+                                        Margin="0,8,0,0"
+                                        VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </DockPanel>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Border>
+</Window>

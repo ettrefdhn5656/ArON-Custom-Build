@@ -1,0 +1,687 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.ProfilesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:v2rayN.Desktop.Converters"
+    xmlns:conv2="using:Avalonia.Data.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    x:Name="Root"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vms:ProfilesViewModel"
+    Design.DataContext="{x:Static dd:DesignData.Profiles}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:DelayColorConverter x:Key="DelayColorConverter" />
+        <conv:DelayTextConverter x:Key="DelayTextConverter" />
+        <conv:ProtocolShortConverter x:Key="ProtocolShortConverter" />
+        <conv:JoinTextConverter x:Key="JoinTextConverter" />
+        <conv:SubItemLabelConverter x:Key="SubItemLabelConverter" />
+        <SolidColorBrush x:Key="DataGridCellBackground" Color="Transparent" />
+        <SolidColorBrush x:Key="DataGridRowBackground" Color="{DynamicResource GlassRowCardColor}" />
+        <SolidColorBrush x:Key="DataGridRowPointeroverBackground" Color="{DynamicResource GlassRowHoverColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedBackground" Color="{DynamicResource GlassRowSelectedColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedPointeroverBackground" Color="{DynamicResource GlassRowSelectedHoverColor}" />
+        <SolidColorBrush x:Key="DataGridColumnHeaderBackground" Color="{DynamicResource GlassColumnHeaderColor}" />
+        <CornerRadius x:Key="DataGridRowCornerRadius">12</CornerRadius>
+        <Thickness x:Key="DataGridRowMargin">6,4</Thickness>
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel Margin="10,6,10,6">
+            <!-- Header Bar: Title, Summary & Live Telemetry Pills -->
+            <Grid
+                Margin="4,2,4,12"
+                ColumnDefinitions="*,Auto"
+                DockPanel.Dock="Top">
+                <StackPanel VerticalAlignment="Center" Spacing="3">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Classes="PageTitle" Text="Servers" />
+                        <Border Classes="CountPill" IsVisible="{Binding BlHasSummary}">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Ellipse
+                                    Width="5"
+                                    Height="5"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource GlassThemeIconBrush}" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="{Binding ServerCount}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Classes="PageSubtitle" Text="{Binding HeaderSummary}" />
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Border
+                        Padding="11,5"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource GlassInsetBrush}"
+                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="999"
+                        IsVisible="{Binding BlHasSummary}"
+                        ToolTip.Tip="{Binding FastestServerName}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon
+                                Width="12"
+                                Height="12"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource ArONBoltGeometry}"
+                                Foreground="{DynamicResource GlassThemeIconBrush}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="9.5"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="BEST" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="11.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                Text="{Binding FastestDelayText}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="ActivePill" IsVisible="{Binding HasActiveServer}">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Ellipse
+                                Width="7"
+                                Height="7"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource GlassPresenceBrush}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="9.5"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource GlassThemeIconBrush}"
+                                Text="ACTIVE" />
+                            <TextBlock
+                                MaxWidth="190"
+                                VerticalAlignment="Center"
+                                FontSize="11.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                Text="{Binding ActiveServerName}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button
+                        x:Name="btnRefreshServers"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="Refresh servers">
+                        <PathIcon Data="{StaticResource SemiIconRefresh}" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Filter & Subscription Group Toolbar -->
+            <Grid
+                Margin="4,0,4,10"
+                ColumnDefinitions="*,Auto"
+                DockPanel.Dock="Top">
+                <WrapPanel VerticalAlignment="Center">
+                    <ListBox
+                        x:Name="lstGroup"
+                        Margin="0,0,4,0"
+                        Classes="ChipFilter"
+                        ItemsSource="{Binding SubItems}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Text="{Binding Converter={StaticResource SubItemLabelConverter}}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="menuSubEdit" Header="{x:Static resx:ResUI.menuSubEdit}" />
+                                <MenuItem x:Name="menuSubAdd" Header="{x:Static resx:ResUI.menuSubAdd}" />
+                                <MenuItem x:Name="menuSubDelete" Header="{x:Static resx:ResUI.menuSubDelete}" />
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                    </ListBox>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="6">
+                        <Button
+                            x:Name="btnEditSub"
+                            Margin="0,2,0,2"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="{x:Static resx:ResUI.menuSubEdit}">
+                            <PathIcon Data="{StaticResource SemiIconEdit}" />
+                        </Button>
+                        <Button
+                            x:Name="btnAddSub"
+                            Margin="0,2,0,2"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="{x:Static resx:ResUI.menuSubAdd}">
+                            <PathIcon Data="{StaticResource SemiIconPlus}" />
+                        </Button>
+                    </StackPanel>
+                </WrapPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <TextBox
+                        x:Name="txtServerFilter"
+                        Width="236"
+                        Height="34"
+                        Margin="0,0,4,0"
+                        VerticalContentAlignment="Center"
+                        Background="{DynamicResource GlassChipBrush}"
+                        BorderBrush="{DynamicResource GlassBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="11"
+                        PlaceholderText="{x:Static resx:ResUI.MsgServerTitle}">
+                        <TextBox.InnerLeftContent>
+                            <PathIcon
+                                Width="14"
+                                Height="14"
+                                Margin="2,0,0,0"
+                                Data="{StaticResource SemiIconSearchStroked}"
+                                Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+
+                    <Button
+                        x:Name="btnAutofitColumnWidth"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuProfileAutofitColumnWidth}">
+                        <PathIcon Data="{StaticResource building_fit}" />
+                    </Button>
+
+                    <Button
+                        x:Name="btnFastRealPing"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuFastRealPing}">
+                        <PathIcon Data="{StaticResource ArONBoltGeometry}" />
+                    </Button>
+
+                    <Button
+                        x:Name="menuMixedTestServer"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuMixedTestServer}">
+                        <PathIcon Data="{StaticResource ArONRadarPingGeometry}" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Server List DataGrid -->
+            <Border
+                Classes="GlassInset"
+                ClipToBounds="True"
+                IsVisible="{Binding !BlIsEmpty}"
+                Margin="4,0,4,2">
+                <DataGrid
+                    x:Name="lstProfiles"
+                    AutoGenerateColumns="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    CanUserReorderColumns="True"
+                    CanUserResizeColumns="True"
+                    Classes.InsetContent="True"
+                    GridLinesVisibility="None"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding ProfileItems}"
+                    RowHeight="66">
+                    <DataGrid.KeyBindings>
+                        <KeyBinding Command="{Binding Export2ShareUrlCmd}" Gesture="Ctrl+C" />
+                        <KeyBinding Command="{Binding SetDefaultServerCmd}" Gesture="Enter" />
+                    </DataGrid.KeyBindings>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem
+                                x:Name="menuSetDefaultServer"
+                                Header="{x:Static resx:ResUI.menuSetDefaultServer}"
+                                InputGesture="Enter" />
+                            <MenuItem
+                                x:Name="menuEditServer"
+                                Header="{x:Static resx:ResUI.menuEditServer}"
+                                InputGesture="Ctrl+D" />
+                            <MenuItem x:Name="menuCopyServer" Header="{x:Static resx:ResUI.menuCopyServer}" />
+                            <MenuItem
+                                x:Name="menuRemoveServer"
+                                Header="{x:Static resx:ResUI.menuRemoveServer}"
+                                InputGesture="Back" />
+                            <MenuItem x:Name="menuRemoveDuplicateServer" Header="{x:Static resx:ResUI.menuRemoveDuplicateServer}" />
+                            <MenuItem x:Name="menuRemoveInvalidServerResult" Header="{x:Static resx:ResUI.menuRemoveInvalidServerResult}" />
+                            <Separator />
+                            <MenuItem
+                                x:Name="menuTcpingServer"
+                                Header="{x:Static resx:ResUI.menuTcpingServer}"
+                                InputGesture="Ctrl+O" />
+                            <MenuItem
+                                x:Name="menuRealPingServer"
+                                Header="{x:Static resx:ResUI.menuRealPingServer}"
+                                InputGesture="Ctrl+R" />
+                            <MenuItem
+                                x:Name="menuSpeedServer"
+                                Header="{x:Static resx:ResUI.menuSpeedServer}"
+                                InputGesture="Ctrl+T" />
+                            <MenuItem x:Name="menuUdpTestServer" Header="{x:Static resx:ResUI.menuUdpTestServer}" />
+                            <MenuItem x:Name="menuSortServerResult" Header="{x:Static resx:ResUI.menuSortServerResult}" />
+                            <Separator />
+                            <MenuItem
+                                x:Name="menuMoveToGroup"
+                                Header="{x:Static resx:ResUI.menuMoveToGroup}"
+                                ItemsSource="{Binding DataContext.SubItems, ElementName=Root}">
+                                <MenuItem.ItemTemplate>
+                                    <DataTemplate>
+                                        <MenuItem
+                                            Command="{Binding DataContext.MoveToGroupCmd, ElementName=Root}"
+                                            CommandParameter="{Binding}"
+                                            Header="{Binding Remarks}" />
+                                    </DataTemplate>
+                                </MenuItem.ItemTemplate>
+                            </MenuItem>
+                            <MenuItem Header="{x:Static resx:ResUI.menuMoveTo}">
+                                <MenuItem
+                                    x:Name="menuMoveTop"
+                                    Header="{x:Static resx:ResUI.menuMoveTop}"
+                                    InputGesture="T" />
+                                <MenuItem
+                                    x:Name="menuMoveUp"
+                                    Header="{x:Static resx:ResUI.menuMoveUp}"
+                                    InputGesture="U" />
+                                <MenuItem
+                                    x:Name="menuMoveDown"
+                                    Header="{x:Static resx:ResUI.menuMoveDown}"
+                                    InputGesture="D" />
+                                <MenuItem
+                                    x:Name="menuMoveBottom"
+                                    Header="{x:Static resx:ResUI.menuMoveBottom}"
+                                    InputGesture="B" />
+                            </MenuItem>
+                            <MenuItem
+                                x:Name="menuSelectAll"
+                                Header="{x:Static resx:ResUI.menuSelectAll}"
+                                InputGesture="Ctrl+A" />
+                            <Separator />
+                            <MenuItem
+                                x:Name="menuShareServer"
+                                Header="{x:Static resx:ResUI.menuShareServer}"
+                                InputGesture="Ctrl+F" />
+                            <MenuItem Header="{x:Static resx:ResUI.menuExportConfig}">
+                                <MenuItem x:Name="menuExport2ClientConfig" Header="{x:Static resx:ResUI.menuExport2ClientConfig}" />
+                                <MenuItem x:Name="menuExport2ClientConfigClipboard" Header="{x:Static resx:ResUI.menuExport2ClientConfigClipboard}" />
+                                <Separator />
+                                <MenuItem
+                                    x:Name="menuExport2ShareUrl"
+                                    Header="{x:Static resx:ResUI.menuExport2ShareUrl}"
+                                    InputGesture="Ctrl+C" />
+                                <MenuItem x:Name="menuExport2ShareUrlBase64" Header="{x:Static resx:ResUI.menuExport2ShareUrlBase64}" />
+                                <MenuItem x:Name="menuExport2InnerUri" Header="{x:Static resx:ResUI.menuExport2InnerUri}" />
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="{x:Static resx:ResUI.menuGenGroupServer}">
+                                <MenuItem x:Name="menuGenGroupAllServer" Header="{x:Static resx:ResUI.menuAllServers}" />
+                                <MenuItem x:Name="menuGenGroupRegionServer" Header="{x:Static resx:ResUI.menuGenRegionGroup}" />
+                            </MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn
+                            Width="2.5*"
+                            MinWidth="240"
+                            SortMemberPath="Remarks"
+                            Tag="Remarks">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="SERVER NODE" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                        Margin="12,0,10,0"
+                                        ColumnDefinitions="14,Auto,*"
+                                        RowDefinitions="Auto,Auto"
+                                        VerticalAlignment="Center">
+                                        <Panel
+                                            Grid.RowSpan="2"
+                                            Width="14"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Stretch">
+                                            <Border
+                                                Width="3.5"
+                                                Height="28"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Background="{DynamicResource GlassPresenceBrush}"
+                                                BoxShadow="{DynamicResource GlassPresenceShadow}"
+                                                CornerRadius="2"
+                                                IsVisible="{Binding IsActive}" />
+                                        </Panel>
+                                        <Border
+                                            Grid.Column="1"
+                                            Margin="0,0,10,0"
+                                            Padding="8,2.5"
+                                            VerticalAlignment="Center"
+                                            Background="{DynamicResource GlassChipBrush}"
+                                            BorderBrush="{DynamicResource GlassBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="7">
+                                            <TextBlock
+                                                FontSize="9.5"
+                                                FontWeight="Bold"
+                                                Foreground="{DynamicResource GlassThemeIconBrush}"
+                                                Text="{Binding ConfigType, Converter={StaticResource ProtocolShortConverter}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                            Text="{Binding Remarks}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="2"
+                                            Margin="0,2,0,0"
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            TextTrimming="CharacterEllipsis">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource JoinTextConverter}">
+                                                    <Binding Path="SubRemarks" />
+                                                    <Binding Path="IpInfo" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
+                            Width="1.7*"
+                            MinWidth="160"
+                            SortMemberPath="Address"
+                            Tag="Address">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="ENDPOINT · TRANSPORT" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                        Margin="14,0"
+                                        RowDefinitions="Auto,Auto"
+                                        VerticalAlignment="Center">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontSize="12"
+                                            FontWeight="Medium"
+                                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                            TextTrimming="CharacterEllipsis">
+                                            <TextBlock.Inlines><Run Text="{Binding Address}" /><Run FontSize="11" Foreground="{DynamicResource GlassTextSecondaryBrush}" Text="{Binding Port, StringFormat=':{0}'}" /></TextBlock.Inlines>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Margin="0,2,0,0"
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            TextTrimming="CharacterEllipsis">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource JoinTextConverter}">
+                                                    <Binding Path="Network" />
+                                                    <Binding Path="StreamSecurity" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
+                            Width="156"
+                            SortMemberPath="Delay"
+                            Tag="Status">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="LATENCY · STATUS" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel
+                                        Margin="14,0,10,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Spacing="3">
+                                        <Border
+                                            Padding="9,3.5"
+                                            HorizontalAlignment="Left"
+                                            Background="{DynamicResource GlassChipBrush}"
+                                            BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <Ellipse
+                                                    Width="6.5"
+                                                    Height="6.5"
+                                                    VerticalAlignment="Center"
+                                                    Fill="{Binding Delay, Converter={StaticResource DelayColorConverter}}" />
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontSize="11.5"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{Binding Delay, Converter={StaticResource DelayColorConverter}}"
+                                                    Text="{Binding Path=DelayVal, Converter={StaticResource DelayTextConverter}, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Border>
+                                        <TextBlock
+                                            HorizontalAlignment="Left"
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            IsVisible="{Binding SpeedVal, Converter={x:Static conv2:StringConverters.IsNotNullOrEmpty}}"
+                                            Text="{Binding SpeedVal}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
+                            Width="206"
+                            SortMemberPath="TodayUp"
+                            Tag="Traffic">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="TRAFFIC" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                        Margin="14,0,10,0"
+                                        HorizontalAlignment="Left"
+                                        ColumnDefinitions="34,64,64"
+                                        RowDefinitions="Auto,Auto"
+                                        VerticalAlignment="Center">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontSize="10"
+                                            FontWeight="Medium"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            Text="Today" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            FontSize="10.5"
+                                            FontWeight="Medium"
+                                            Foreground="{DynamicResource GlassThemeIconBrush}"
+                                            Text="{Binding TodayUp, StringFormat='↑ {0}'}" />
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            HorizontalAlignment="Right"
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                            Text="{Binding TodayDown, StringFormat='↓ {0}'}" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Margin="0,2,0,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            Text="Total" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Margin="0,2,0,0"
+                                            HorizontalAlignment="Right"
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            Text="{Binding TotalUp, StringFormat='↑ {0}'}" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="2"
+                                            Margin="0,2,0,0"
+                                            HorizontalAlignment="Right"
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            Text="{Binding TotalDown, StringFormat='↓ {0}'}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </DockPanel>
+
+        <!-- Commercial Empty State Hero Card -->
+        <Border
+            MaxWidth="490"
+            Margin="32"
+            Padding="36,30"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="{DynamicResource GlassBarBrush}"
+            BorderBrush="{DynamicResource GlassBorderBrush}"
+            BorderThickness="1"
+            BoxShadow="{DynamicResource GlassPanelShadow}"
+            CornerRadius="22"
+            IsVisible="{Binding BlIsEmpty}">
+            <StackPanel Spacing="6">
+                <Panel
+                    Width="116"
+                    Height="116"
+                    HorizontalAlignment="Center">
+                    <Ellipse
+                        Width="116"
+                        Height="116"
+                        Fill="{DynamicResource GlassGlowPrimaryBrush}" />
+                    <Border
+                        Width="78"
+                        Height="78"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource GlassChipBrush}"
+                        BorderBrush="{DynamicResource GlassBorderBrush}"
+                        BorderThickness="1"
+                        BoxShadow="{DynamicResource GlassChipShadow}"
+                        CornerRadius="24">
+                        <Path
+                            Width="48"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource ArONMarkGeometry}"
+                            Fill="{DynamicResource ArONBrandBrush}"
+                            Stretch="Uniform" />
+                    </Border>
+                </Panel>
+
+                <TextBlock
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="17"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                    Text="{Binding EmptyTitle}" />
+
+                <TextBlock
+                    MaxWidth="380"
+                    HorizontalAlignment="Center"
+                    FontSize="12.5"
+                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                    LineHeight="19"
+                    Text="{Binding EmptyDescription}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+
+                <StackPanel
+                    Margin="0,16,0,0"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <Button
+                        x:Name="btnImportClipboard"
+                        Classes="Primary">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon
+                                Width="14"
+                                Height="14"
+                                Data="{StaticResource SemiIconPlus}" />
+                            <TextBlock VerticalAlignment="Center" Text="Import from clipboard" />
+                        </StackPanel>
+                    </Button>
+                    <Button
+                        x:Name="btnScanQr"
+                        Classes="Soft">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon
+                                Width="14"
+                                Height="14"
+                                Data="{StaticResource ArONQrScanGeometry}"
+                                Foreground="{DynamicResource GlassThemeIconBrush}" />
+                            <TextBlock VerticalAlignment="Center" Text="Scan QR code" />
+                        </StackPanel>
+                    </Button>
+                    <Button
+                        x:Name="btnNewGroupEmpty"
+                        Classes="Ghost"
+                        Content="New group"
+                        IsVisible="{Binding !BlIsFiltered}" />
+                    <Button
+                        x:Name="btnClearSearch"
+                        Classes="Soft"
+                        Content="Clear search"
+                        IsVisible="{Binding BlIsFiltered}" />
+                </StackPanel>
+
+                <Border
+                    Margin="0,14,0,0"
+                    Padding="12,6"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource GlassInsetBrush}"
+                    BorderBrush="{DynamicResource GlassHairlineBrush}"
+                    BorderThickness="1"
+                    CornerRadius="999">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="10.5"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="Supports vless:// · vmess:// · trojan:// · ss:// · hy2:// · wg://"
+                        TextAlignment="Center" />
+                </Border>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

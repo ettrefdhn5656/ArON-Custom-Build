@@ -1,0 +1,226 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.ClashProxiesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vms:ClashProxiesViewModel"
+    Design.DataContext="{x:Static dd:DesignData.ClashProxies}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:DelayColorConverter x:Key="DelayColorConverter" />
+        <conv:CollectionEmptyConverter x:Key="CollectionEmptyConverter" />
+    </UserControl.Resources>
+
+    <DockPanel Margin="2">
+        <StackPanel
+            Margin="0,0,0,10"
+            DockPanel.Dock="Top"
+            Spacing="10">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="11.5"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="{x:Static resx:ResUI.menuRulemode}" />
+                    <ComboBox
+                        x:Name="cmbRulemode"
+                        Width="130"
+                        Height="34"
+                        VerticalContentAlignment="Center"
+                        Background="{DynamicResource GlassChipBrush}"
+                        BorderBrush="{DynamicResource GlassBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <Button
+                        x:Name="menuProxiesReload"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuProxiesReload}">
+                        <PathIcon Data="{StaticResource SemiIconRefresh}" />
+                    </Button>
+                    <Button
+                        x:Name="menuGroupProxiesDelaytest"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuDelaytest}">
+                        <PathIcon Data="{StaticResource ArONBoltGeometry}" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="11.5"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="{x:Static resx:ResUI.TbSorting}" />
+                    <ComboBox
+                        x:Name="cmbSorting"
+                        Width="130"
+                        Height="34"
+                        VerticalContentAlignment="Center"
+                        Background="{DynamicResource GlassChipBrush}"
+                        BorderBrush="{DynamicResource GlassBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                        <ComboBoxItem Content="{x:Static resx:ResUI.TbSortingDelay}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.TbSortingName}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.TbSortingDefault}" />
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="7">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="11"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="{x:Static resx:ResUI.TbAutoRefresh}" />
+                    <ToggleSwitch
+                        x:Name="togAutoRefresh"
+                        HorizontalAlignment="Left"
+                        Theme="{DynamicResource SimpleToggleSwitch}" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <Grid>
+            <DockPanel>
+                <ListBox
+                    x:Name="lstProxyGroups"
+                    DockPanel.Dock="Left"
+                    ItemsSource="{Binding ProxyGroups}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Label
+                                Width="160"
+                                Margin="-4,-6"
+                                Padding="0"
+                                Theme="{DynamicResource TagLabel}">
+                                <Grid Margin="{StaticResource Margin4}" RowDefinitions="1*,8,1*">
+                                    <DockPanel Grid.Row="0">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Type}" />
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DockPanel>
+                                    <TextBlock Grid.Row="2" Text="{Binding Now}" />
+                                </Grid>
+                            </Label>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListBox>
+
+                <ListBox x:Name="lstProxyDetails" ItemsSource="{Binding ProxyDetails}">
+                    <ItemsControl.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="menuProxyDelaytest" Header="{x:Static resx:ResUI.menuDelaytest}" />
+                            <MenuItem
+                                x:Name="menuProxiesSelectActivity"
+                                Header="{x:Static resx:ResUI.menuProxiesSelectActivity}"
+                                InputGesture="Enter" />
+                        </ContextMenu>
+                    </ItemsControl.ContextMenu>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Label
+                                Width="160"
+                                Margin="-10,-6"
+                                Padding="0"
+                                Theme="{DynamicResource TagLabel}">
+                                <DockPanel>
+                                    <Border
+                                        Width="4"
+                                        Margin="0,1"
+                                        Background="{DynamicResource GlassPresenceBrush}"
+                                        CornerRadius="4"
+                                        DockPanel.Dock="Left"
+                                        IsVisible="{Binding IsActive}" />
+                                    <Grid Margin="{StaticResource Margin4}" RowDefinitions="1*,8,1*">
+                                        <TextBlock Grid.Row="0" Text="{Binding Name}" />
+                                        <DockPanel Grid.Row="2">
+                                            <TextBlock
+                                                DockPanel.Dock="Right"
+                                                Foreground="{Binding Path=Delay, Converter={StaticResource DelayColorConverter}}"
+                                                Text="{Binding DelayName}" />
+                                            <TextBlock Text="{Binding Type}" />
+                                        </DockPanel>
+                                    </Grid>
+                                </DockPanel>
+                            </Label>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <StackPanel
+                MaxWidth="300"
+                Margin="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                IsVisible="{Binding ProxyGroups.Count, Converter={StaticResource CollectionEmptyConverter}}"
+                Spacing="4">
+                <Path
+                    Width="68"
+                    Height="32"
+                    HorizontalAlignment="Center"
+                    Data="{StaticResource ArONMarkGeometry}"
+                    Fill="{DynamicResource ArONBrandBrush}"
+                    Opacity="0.65"
+                    Stretch="Uniform" />
+                <TextBlock
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="13.5"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                    Text="No proxy groups yet" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="11.5"
+                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                    Text="Connect to a profile to inspect its groups and latency."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

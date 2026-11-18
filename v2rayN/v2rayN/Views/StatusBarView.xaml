@@ -1,0 +1,277 @@
+<reactiveui:ReactiveUserControl
+    x:Class="v2rayN.Views.StatusBarView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:TypeArguments="vms:StatusBarViewModel"
+    Background="Transparent"
+    Style="{StaticResource ViewGlobal}"
+    mc:Ignorable="d">
+    <Grid Background="Transparent">
+        <Border
+            x:Name="borderGlass"
+            HorizontalAlignment="Center"
+            Padding="14,6"
+            CornerRadius="18"
+            BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="20"
+                    ShadowDepth="4"
+                    Direction="270"
+                    Opacity="0.2"
+                    Color="#000000" />
+            </Border.Effect>
+            <DockPanel Margin="0">
+                <StackPanel
+                    Margin="{StaticResource MarginLeftRight8}"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right">
+                    <TextBlock
+                        x:Name="txtSpeedProxyDisplay"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource StatusbarItem}" />
+                    <Border Margin="1" />
+                    <TextBlock
+                        x:Name="txtSpeedDirectDisplay"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource StatusbarItem}" />
+                </StackPanel>
+
+                <StackPanel
+                    x:Name="spToggleLog"
+                    Margin="{StaticResource MarginLeftRight8}"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Right"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Margin="{StaticResource MarginLeftRight8}"
+                        VerticalAlignment="Center"
+                        FontWeight="Medium"
+                        Style="{StaticResource StatusbarItem}"
+                        Text="Log" />
+                    <ToggleButton
+                        x:Name="togShowLog"
+                        Margin="{StaticResource Margin4}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        AutomationProperties.Name="Log" />
+                </StackPanel>
+
+                <StackPanel
+                    Width="Auto"
+                    Margin="{StaticResource MarginLeftRight8}"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left">
+                    <TextBlock x:Name="txtInboundDisplay" Style="{StaticResource StatusbarItem}" />
+                    <Border Margin="1" />
+                    <TextBlock x:Name="txtInboundLanDisplay" Style="{StaticResource StatusbarItem}" />
+                </StackPanel>
+
+                <StackPanel
+                    x:Name="spEnableTun"
+                    Width="Auto"
+                    Margin="{StaticResource MarginLeftRight8}"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="btnConnect"
+                        Height="28"
+                        Padding="14,2"
+                        FontWeight="SemiBold"
+                        Command="{Binding ToggleConnectCmd}">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="14" />
+                            </Style>
+                        </Button.Resources>
+                        <TextBlock Text="{Binding ConnectButtonText}" />
+                    </Button>
+                </StackPanel>
+
+                <StackPanel
+                    Margin="{StaticResource MarginLeftRight8}"
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal">
+                    <ComboBox
+                        x:Name="cmbSystemProxy"
+                        Width="160"
+                        Margin="{StaticResource MarginLeftRight8}"
+                        materialDesign:HintAssist.Hint="{x:Static resx:ResUI.menuSystemproxy}"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuSystemproxy}"
+                        FontSize="{DynamicResource StdFontSize}"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxyClear}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxySet}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxyNothing}" />
+                        <ComboBoxItem Content="{x:Static resx:ResUI.menuSystemProxyPac}" />
+                    </ComboBox>
+
+                    <ComboBox
+                        x:Name="cmbRoutings2"
+                        Width="160"
+                        Margin="{StaticResource MarginLeftRight8}"
+                        materialDesign:HintAssist.Hint="{x:Static resx:ResUI.menuRouting}"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuRouting}"
+                        DisplayMemberPath="Remarks"
+                        FontSize="{DynamicResource StdFontSize}"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+                </StackPanel>
+
+                <StackPanel Margin="{StaticResource MarginLeftRight8}" VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="txtRunningServerDisplay"
+                        MaxWidth="260"
+                        TextTrimming="CharacterEllipsis"
+                        Style="{StaticResource StatusbarItem}" />
+                    <Border Margin="1" />
+                    <TextBlock
+                        x:Name="txtRunningInfoDisplay"
+                        MaxWidth="260"
+                        TextTrimming="CharacterEllipsis"
+                        Style="{StaticResource StatusbarItem}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <tb:TaskbarIcon
+            x:Name="tbNotify"
+            IconSource="/Resources/v2rayN.ico"
+            NoLeftClickDelay="True"
+            ToolTipText="MehrON">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu Style="{StaticResource DefContextMenu}">
+                    <MenuItem
+                        x:Name="menuSystemProxyClear"
+                        Height="{StaticResource MenuItemHeight}"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuSystemProxyClear}">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    x:Name="menuSystemProxyClear2"
+                                    Margin="{StaticResource MarginRight8}"
+                                    VerticalAlignment="Center"
+                                    Kind="Check" />
+                                <TextBlock Text="{x:Static resx:ResUI.menuSystemProxyClear}" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem
+                        x:Name="menuSystemProxySet"
+                        Height="{StaticResource MenuItemHeight}"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuSystemProxySet}">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    x:Name="menuSystemProxySet2"
+                                    Margin="{StaticResource MarginRight8}"
+                                    VerticalAlignment="Center"
+                                    Kind="Check" />
+                                <TextBlock Text="{x:Static resx:ResUI.menuSystemProxySet}" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem
+                        x:Name="menuSystemProxyNothing"
+                        Height="{StaticResource MenuItemHeight}"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuSystemProxyNothing}">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    x:Name="menuSystemProxyNothing2"
+                                    Margin="{StaticResource MarginRight8}"
+                                    VerticalAlignment="Center"
+                                    Kind="Check" />
+                                <TextBlock Text="{x:Static resx:ResUI.menuSystemProxyNothing}" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem
+                        x:Name="menuSystemProxyPac"
+                        Height="{StaticResource MenuItemHeight}"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuSystemProxyPac}">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    x:Name="menuSystemProxyPac2"
+                                    Margin="{StaticResource MarginRight8}"
+                                    VerticalAlignment="Center"
+                                    Kind="Check" />
+                                <TextBlock Text="{x:Static resx:ResUI.menuSystemProxyPac}" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <Separator x:Name="sepRoutings" />
+                    <MenuItem
+                        x:Name="menuRoutings"
+                        Height="Auto"
+                        AutomationProperties.Name="{x:Static resx:ResUI.menuRouting}">
+                        <MenuItem.Header>
+                            <DockPanel>
+                                <ComboBox
+                                    x:Name="cmbRoutings"
+                                    MaxWidth="300"
+                                    materialDesign:HintAssist.Hint="{x:Static resx:ResUI.menuRouting}"
+                                    AutomationProperties.Name="{x:Static resx:ResUI.menuRouting}"
+                                    DisplayMemberPath="Remarks"
+                                    FontSize="{DynamicResource StdFontSize}"
+                                    Style="{StaticResource MaterialDesignFilledComboBox}" />
+                            </DockPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Height="Auto" AutomationProperties.Name="{x:Static resx:ResUI.menuServers}">
+                        <MenuItem.Header>
+                            <DockPanel>
+                                <ComboBox
+                                    x:Name="cmbServers"
+                                    MaxWidth="300"
+                                    materialDesign:HintAssist.Hint="{x:Static resx:ResUI.menuServers}"
+                                    AutomationProperties.Name="{x:Static resx:ResUI.menuServers}"
+                                    DisplayMemberPath="Text"
+                                    FontSize="{DynamicResource StdFontSize}"
+                                    Style="{StaticResource MaterialDesignFilledComboBox}" />
+                            </DockPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem
+                        x:Name="menuAddServerViaClipboard2"
+                        Height="{StaticResource MenuItemHeight}"
+                        Header="{x:Static resx:ResUI.menuAddServerViaClipboard}" />
+                    <MenuItem
+                        x:Name="menuAddServerViaScan2"
+                        Height="{StaticResource MenuItemHeight}"
+                        Header="{x:Static resx:ResUI.menuAddServerViaScan}" />
+                    <MenuItem
+                        x:Name="menuSubUpdate2"
+                        Height="{StaticResource MenuItemHeight}"
+                        Header="{x:Static resx:ResUI.menuSubUpdate}" />
+                    <MenuItem
+                        x:Name="menuSubUpdateViaProxy2"
+                        Height="{StaticResource MenuItemHeight}"
+                        Header="{x:Static resx:ResUI.menuSubUpdateViaProxy}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="menuCopyProxyCmdToClipboard"
+                        Height="{StaticResource MenuItemHeight}"
+                        Header="{x:Static resx:ResUI.menuCopyProxyCmdToClipboard}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="menuExit"
+                        Height="{StaticResource MenuItemHeight}"
+                        Header="{x:Static resx:ResUI.menuExit}" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+    </Grid>
+</reactiveui:ReactiveUserControl>

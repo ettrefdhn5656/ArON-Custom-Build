@@ -1,0 +1,72 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.MessageBoxDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    Width="440"
+    MinWidth="360"
+    MaxWidth="620"
+    CanResize="False"
+    ShowInTaskbar="False"
+    SizeToContent="Height"
+    WindowDecorations="Full"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="10"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon
+                        Width="20"
+                        Height="20"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource SemiIconInfoCircle}"
+                        Foreground="{DynamicResource GlassThemeIconBrush}" />
+                    <TextBlock x:Name="txtCaption" Classes="WindowTitle" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Margin="20,18,20,16" Spacing="18">
+                <ScrollViewer
+                    MinHeight="48"
+                    MaxHeight="300"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <TextBlock
+                        x:Name="txtMessage"
+                        VerticalAlignment="Center"
+                        FontSize="13.5"
+                        Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                        LineHeight="22"
+                        TextWrapping="Wrap" />
+                </ScrollViewer>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button
+                        x:Name="btnYes"
+                        MinWidth="92"
+                        HorizontalContentAlignment="Center"
+                        Classes="Primary"
+                        Content="{x:Static resx:ResUI.TbConfirm}"
+                        IsDefault="True" />
+                    <Button
+                        x:Name="btnNo"
+                        MinWidth="92"
+                        HorizontalContentAlignment="Center"
+                        Classes="Ghost"
+                        Content="{x:Static resx:ResUI.TbCancel}"
+                        IsCancel="True" />
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</Window>

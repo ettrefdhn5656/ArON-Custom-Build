@@ -1,0 +1,41 @@
+name: Build Windows x64
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+          10.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build and Publish
+      shell: pwsh
+      run: |
+        $projects = Get-ChildItem -Recurse -Filter *.csproj | Where-Object { $_.FullName -notmatch "Test" }
+        foreach ($proj in $projects) {
+          Write-Host "Publishing $($proj.FullName)..."
+          dotnet publish $proj.FullName -c Release -r win-x64 --self-contained false -o "$env:RUNNER_TEMP/publish/$($proj.BaseName)" || true
+        }
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ArON-Windows-x64
+        path: ${{ runner.temp }}/publish/

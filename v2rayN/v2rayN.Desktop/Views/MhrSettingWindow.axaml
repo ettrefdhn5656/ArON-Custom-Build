@@ -1,0 +1,201 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.MhrSettingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="MHR Settings"
+    Width="720"
+    Height="660"
+    MinWidth="640"
+    MinHeight="560"
+    x:DataType="vms:MhrSettingViewModel"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconCloudStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="Master HTTP Relay" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Forward local traffic through Google Apps Script." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="MHR" />
+                        </Border>
+                        <Border
+                            Classes="ActivePill"
+                            IsVisible="{Binding Enabled}"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="9.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="ARMED" />
+                        </Border>
+                        <Border
+                            Classes="CountPill"
+                            IsVisible="{Binding !Enabled}"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="9.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="IDLE" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button
+                        x:Name="btnStop"
+                        Width="96"
+                        Classes="Ghost"
+                        Content="Stop" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="14,0,0,0"
+                        VerticalAlignment="Center"
+                        Classes="PageSubtitle"
+                        Text="Saves config.json and starts the relay."
+                        TextTrimming="CharacterEllipsis" />
+                    <StackPanel
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="132"
+                            Classes="Primary"
+                            Content="Save &amp; Start"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10,10,10,4" Spacing="0">
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="RELAY" />
+
+                            <Grid Classes="FormRow" ColumnDefinitions="170,*">
+                                <TextBlock Classes="FieldLabel" Text="Enable relay" />
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="10">
+                                    <ToggleSwitch IsChecked="{Binding Enabled}" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldHint"
+                                        Text="Start the selected relay on save." />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="170,*">
+                                <TextBlock Classes="FieldLabel" Text="Relay variant" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    Width="300"
+                                    HorizontalAlignment="Left"
+                                    ItemsSource="{Binding Variants}"
+                                    SelectedItem="{Binding Variant}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="170,*">
+                                <TextBlock Classes="FieldLabel" Text="Deployment ID" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="Google Apps Script deployment ID"
+                                    Text="{Binding ScriptId}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="170,*">
+                                <TextBlock Classes="FieldLabel" Text="AUTH_KEY" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    PasswordChar="●"
+                                    PlaceholderText="Must match Code.gs"
+                                    Text="{Binding AuthKey}" />
+                            </Grid>
+
+                            <Grid Classes="FormRow" ColumnDefinitions="170,*,Auto,*">
+                                <TextBlock Classes="FieldLabel" Text="HTTP proxy port" />
+                                <NumericUpDown
+                                    Grid.Column="1"
+                                    Margin="0,0,22,0"
+                                    HorizontalAlignment="Stretch"
+                                    Maximum="65535"
+                                    Minimum="1"
+                                    Value="{Binding HttpPort}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Classes="FieldLabel"
+                                    Text="SOCKS5 port" />
+                                <NumericUpDown
+                                    Grid.Column="3"
+                                    Margin="16,0,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    Maximum="65535"
+                                    Minimum="1"
+                                    Value="{Binding Socks5Port}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="FormCard">
+                        <StackPanel>
+                            <TextBlock Classes="SectionLabel" Text="NOTES" />
+                            <TextBlock
+                                Classes="FieldHint"
+                                Text="MHR-CFW additionally requires a deployed Cloudflare Worker URL inside its server-side Code.gs. The bundled source needs Python 3.10+ and its requirements before it can start."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</Window>

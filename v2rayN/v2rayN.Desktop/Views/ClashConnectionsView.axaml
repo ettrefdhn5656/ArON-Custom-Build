@@ -1,0 +1,210 @@
+<UserControl
+    x:Class="v2rayN.Desktop.Views.ClashConnectionsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vms:ClashConnectionsViewModel"
+    Design.DataContext="{x:Static dd:DesignData.ClashConnections}"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <conv:CollectionEmptyConverter x:Key="CollectionEmptyConverter" />
+    </UserControl.Resources>
+
+    <DockPanel Margin="2">
+        <StackPanel
+            Margin="0,0,0,10"
+            DockPanel.Dock="Top"
+            Spacing="10">
+            <TextBox
+                x:Name="txtHostFilter"
+                Height="34"
+                VerticalContentAlignment="Center"
+                Background="{DynamicResource GlassChipBrush}"
+                BorderBrush="{DynamicResource GlassBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="10"
+                PlaceholderText="{x:Static resx:ResUI.ConnectionsHostFilterTitle}">
+                <TextBox.InnerLeftContent>
+                    <PathIcon
+                        Width="14"
+                        Height="14"
+                        Data="{StaticResource SemiIconSearchStroked}"
+                        Foreground="{DynamicResource GlassThemeIconBrush}" />
+                </TextBox.InnerLeftContent>
+            </TextBox>
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button
+                        x:Name="btnConnectionCloseAll"
+                        Classes="IconButton ToolGlass Danger"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuConnectionCloseAll}">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+                    <Button
+                        x:Name="btnAutofitColumnWidth"
+                        Classes="IconButton ToolGlass"
+                        ToolTip.Tip="{x:Static resx:ResUI.menuProfileAutofitColumnWidth}">
+                        <PathIcon Data="{StaticResource building_fit}" />
+                    </Button>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="7">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="11"
+                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                        Text="{x:Static resx:ResUI.TbAutoRefresh}" />
+                    <ToggleSwitch
+                        x:Name="togAutoRefresh"
+                        HorizontalAlignment="Left"
+                        Theme="{DynamicResource SimpleToggleSwitch}" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <Grid>
+            <Border Classes="GlassInset" ClipToBounds="True" CornerRadius="14">
+                <DataGrid
+                    x:Name="lstConnections"
+                    AutoGenerateColumns="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    CanUserResizeColumns="True"
+                    GridLinesVisibility="Horizontal"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding ConnectionItems}">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="menuConnectionClose" Header="{x:Static resx:ResUI.menuConnectionClose}" />
+                            <MenuItem x:Name="menuConnectionCloseAll" Header="{x:Static resx:ResUI.menuConnectionCloseAll}" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="*" MinWidth="180">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="HOST · ROUTE" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel
+                                        Margin="12,0"
+                                        VerticalAlignment="Center"
+                                        Spacing="1">
+                                        <TextBlock
+                                            FontSize="12"
+                                            Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                            Text="{Binding Host}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            FontSize="10.5"
+                                            Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                            Text="{Binding Chain}"
+                                            TextTrimming="CharacterEllipsis"
+                                            ToolTip.Tip="{Binding ProcessPath}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="70">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="TYPE" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        FontSize="11.5"
+                                        Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                        Text="{Binding Type}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="72">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="NET" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        FontSize="11.5"
+                                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                        Text="{Binding Network}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="68">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Classes="GridHead" Text="TIME" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Margin="8,0,12,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        FontSize="11.5"
+                                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                        Text="{Binding Elapsed}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <StackPanel
+                MaxWidth="300"
+                Margin="24,38,24,24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                IsVisible="{Binding ConnectionItems.Count, Converter={StaticResource CollectionEmptyConverter}}"
+                Spacing="4">
+                <Path
+                    Width="68"
+                    Height="32"
+                    HorizontalAlignment="Center"
+                    Data="{StaticResource ArONMarkGeometry}"
+                    Fill="{DynamicResource ArONBrandBrush}"
+                    Opacity="0.65"
+                    Stretch="Uniform" />
+                <TextBlock
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="13.5"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                    Text="No live connections" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="11.5"
+                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                    Text="Traffic through your active profile will appear here."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

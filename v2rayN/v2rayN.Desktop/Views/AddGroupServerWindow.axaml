@@ -1,0 +1,377 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.AddGroupServerWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:ServiceLib.Models.Entities;assembly=ServiceLib"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuServers}"
+    Width="960"
+    Height="700"
+    MinWidth="820"
+    MinHeight="560"
+    x:DataType="vms:AddGroupServerViewModel"
+    Design.DataContext="{x:Static dd:DesignData.AddGroupServer}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <conv:SubItemLabelConverter x:Key="SubItemLabelConverter" />
+        <SolidColorBrush x:Key="DataGridCellBackground" Color="Transparent" />
+        <SolidColorBrush x:Key="DataGridRowBackground" Color="{DynamicResource GlassRowCardColor}" />
+        <SolidColorBrush x:Key="DataGridRowPointeroverBackground" Color="{DynamicResource GlassRowHoverColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedBackground" Color="{DynamicResource GlassRowSelectedColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedPointeroverBackground" Color="{DynamicResource GlassRowSelectedHoverColor}" />
+        <SolidColorBrush x:Key="DataGridColumnHeaderBackground" Color="{DynamicResource GlassColumnHeaderColor}" />
+        <CornerRadius x:Key="DataGridRowCornerRadius">12</CornerRadius>
+        <Thickness x:Key="DataGridRowMargin">6,4</Thickness>
+    </Window.Resources>
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconServerStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Classes="WindowTitle" Text="Group server" />
+                                <Border Classes="CountPill" VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="10.5"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                        Text="{Binding ChildCount}" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Bundle several servers behind one balanced entry." />
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Member servers are ordered. Use the context menu to reorder or remove." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="Cancel"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="128"
+                            Classes="Primary"
+                            Content="Save group"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border
+                Margin="4,8,4,4"
+                Classes="FormCard"
+                DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,16,210,16,210">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="{x:Static resx:ResUI.TbRemarks}" />
+                        <TextBox x:Name="txtRemarks" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="{x:Static resx:ResUI.TbCoreType}" />
+                        <ComboBox x:Name="cmbCoreType" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                    <Grid
+                        x:Name="gridPolicyGroup"
+                        Grid.Column="4"
+                        RowDefinitions="Auto,Auto">
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Classes="SectionLabel"
+                            Text="{x:Static resx:ResUI.TbPolicyGroupType}" />
+                        <ComboBox
+                            x:Name="cmbPolicyGroupType"
+                            Grid.Row="1"
+                            HorizontalAlignment="Stretch" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <TabControl
+                x:Name="tabControl"
+                Classes="GlassTabs"
+                HorizontalContentAlignment="Stretch">
+                <TabItem Header="Source">
+                    <Border
+                        Margin="4,4,4,0"
+                        Classes="FormCard">
+                        <Grid ColumnDefinitions="*,20,*">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Classes="SectionLabel"
+                                    Text="{x:Static resx:ResUI.menuSubscription}" />
+                                <ComboBox
+                                    x:Name="cmbSubChildItems"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="No subscription groups"
+                                    ItemsSource="{Binding SubItems}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="model:SubItem">
+                                            <TextBlock Text="{Binding Converter={StaticResource SubItemLabelConverter}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    Classes="FieldHint"
+                                    Text="{x:Static resx:ResUI.TbPolicyGroupSubChildTip}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Classes="SectionLabel"
+                                    Text="{x:Static resx:ResUI.LvFilter}" />
+                                <ComboBox
+                                    x:Name="cmbFilter"
+                                    HorizontalAlignment="Stretch"
+                                    PlaceholderText="All servers"
+                                    IsEditable="True" />
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    Classes="FieldHint"
+                                    Text="Only servers matching this expression are offered." />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </TabItem>
+
+                <TabItem Header="Servers">
+                    <Border
+                        Margin="4,4,4,0"
+                        Padding="0"
+                        Classes="FormCard"
+                        ClipToBounds="True">
+                        <Grid>
+                            <DataGrid
+                                x:Name="lstChild"
+                                Margin="6"
+                                AutoGenerateColumns="False"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                CanUserReorderColumns="False"
+                                CanUserResizeColumns="True"
+                                CanUserSortColumns="False"
+                                GridLinesVisibility="None"
+                                HeadersVisibility="Column"
+                                IsReadOnly="True"
+                                IsVisible="{Binding !BlIsEmpty}"
+                                ItemsSource="{Binding ChildItemsObs}"
+                                RowHeight="44"
+                                SelectionMode="Extended">
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem x:Name="menuAddChildServer" Header="{x:Static resx:ResUI.menuAddChildServer}" />
+                                        <MenuItem
+                                            x:Name="menuRemoveChildServer"
+                                            Header="{x:Static resx:ResUI.menuRemoveChildServer}"
+                                            InputGesture="Back" />
+                                        <MenuItem
+                                            x:Name="menuSelectAllChild"
+                                            Header="{x:Static resx:ResUI.menuSelectAll}"
+                                            InputGesture="Ctrl+A" />
+                                        <Separator />
+                                        <MenuItem
+                                            x:Name="menuMoveTop"
+                                            Header="{x:Static resx:ResUI.menuMoveTop}"
+                                            InputGesture="T" />
+                                        <MenuItem
+                                            x:Name="menuMoveUp"
+                                            Header="{x:Static resx:ResUI.menuMoveUp}"
+                                            InputGesture="U" />
+                                        <MenuItem
+                                            x:Name="menuMoveDown"
+                                            Header="{x:Static resx:ResUI.menuMoveDown}"
+                                            InputGesture="D" />
+                                        <MenuItem
+                                            x:Name="menuMoveBottom"
+                                            Header="{x:Static resx:ResUI.menuMoveBottom}"
+                                            InputGesture="B" />
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="150"
+                                        Binding="{Binding ConfigType}"
+                                        Header="{x:Static resx:ResUI.LvServiceType}" />
+                                    <DataGridTextColumn
+                                        Width="220"
+                                        Binding="{Binding Remarks}"
+                                        Header="{x:Static resx:ResUI.LvRemarks}" />
+                                    <DataGridTextColumn
+                                        Width="*"
+                                        Binding="{Binding Address}"
+                                        Header="{x:Static resx:ResUI.LvAddress}" />
+                                    <DataGridTextColumn
+                                        Width="90"
+                                        Binding="{Binding Port}"
+                                        Header="{x:Static resx:ResUI.LvPort}" />
+                                    <DataGridTextColumn
+                                        Width="110"
+                                        Binding="{Binding Network}"
+                                        Header="{x:Static resx:ResUI.LvTransportProtocol}" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding StreamSecurity}"
+                                        Header="{x:Static resx:ResUI.LvTLS}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <StackPanel
+                                MaxWidth="380"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding BlIsEmpty}"
+                                Spacing="5">
+                                <Path
+                                    Width="80"
+                                    Height="36"
+                                    HorizontalAlignment="Center"
+                                    Data="{StaticResource ArONMarkGeometry}"
+                                    Fill="{DynamicResource GlassThemeIconBrush}"
+                                    Stretch="Uniform" />
+                                <TextBlock
+                                    Margin="0,12,0,0"
+                                    HorizontalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                    Text="No member servers yet" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                    Text="Add servers from your profiles to balance traffic across them."
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                                <Button
+                                    Margin="0,10,0,0"
+                                    HorizontalAlignment="Center"
+                                    Classes="Primary"
+                                    Command="{Binding AddCmd}"
+                                    Content="Add servers" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </TabItem>
+
+                <TabItem Header="Preview">
+                    <Border
+                        Margin="4,4,4,0"
+                        Padding="0"
+                        Classes="FormCard"
+                        ClipToBounds="True">
+                        <DataGrid
+                            x:Name="lstPreviewChild"
+                            Margin="6"
+                            AutoGenerateColumns="False"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CanUserReorderColumns="False"
+                            CanUserResizeColumns="True"
+                            CanUserSortColumns="False"
+                            GridLinesVisibility="None"
+                            HeadersVisibility="Column"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding AllProfilePreviewItemsObs}"
+                            RowHeight="44"
+                            SelectionMode="Extended">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="150"
+                                    Binding="{Binding ConfigType}"
+                                    Header="{x:Static resx:ResUI.LvServiceType}" />
+                                <DataGridTextColumn
+                                    Width="220"
+                                    Binding="{Binding Remarks}"
+                                    Header="{x:Static resx:ResUI.LvRemarks}" />
+                                <DataGridTextColumn
+                                    Width="*"
+                                    Binding="{Binding Address}"
+                                    Header="{x:Static resx:ResUI.LvAddress}" />
+                                <DataGridTextColumn
+                                    Width="90"
+                                    Binding="{Binding Port}"
+                                    Header="{x:Static resx:ResUI.LvPort}" />
+                                <DataGridTextColumn
+                                    Width="110"
+                                    Binding="{Binding Network}"
+                                    Header="{x:Static resx:ResUI.LvTransportProtocol}" />
+                                <DataGridTextColumn
+                                    Width="100"
+                                    Binding="{Binding StreamSecurity}"
+                                    Header="{x:Static resx:ResUI.LvTLS}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Border>
+</Window>

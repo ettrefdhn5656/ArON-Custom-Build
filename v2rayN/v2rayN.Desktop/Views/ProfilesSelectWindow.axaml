@@ -1,0 +1,263 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.ProfilesSelectWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:automation="using:Avalonia.Automation"
+    xmlns:conv="using:v2rayN.Desktop.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.TbSelectProfile}"
+    Width="960"
+    Height="500"
+    MinWidth="884"
+    MinHeight="440"
+    x:DataType="vms:ProfilesSelectViewModel"
+    Design.DataContext="{x:Static dd:DesignData.ProfilesSelect}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <conv:DelayColorConverter x:Key="DelayColorConverter" />
+        <conv:DelayTextConverter x:Key="DelayTextConverter" />
+        <SolidColorBrush x:Key="DataGridCellBackground" Color="Transparent" />
+        <SolidColorBrush x:Key="DataGridRowBackground" Color="{DynamicResource GlassRowCardColor}" />
+        <SolidColorBrush x:Key="DataGridRowPointeroverBackground" Color="{DynamicResource GlassRowHoverColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedBackground" Color="{DynamicResource GlassRowSelectedColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedPointeroverBackground" Color="{DynamicResource GlassRowSelectedHoverColor}" />
+        <SolidColorBrush x:Key="DataGridColumnHeaderBackground" Color="{DynamicResource GlassColumnHeaderColor}" />
+        <CornerRadius x:Key="DataGridRowCornerRadius">12</CornerRadius>
+        <Thickness x:Key="DataGridRowMargin">6,4</Thickness>
+    </Window.Resources>
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCloseHeader"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="Close">
+                            <PathIcon Data="{StaticResource SemiIconClose}" />
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnAutofitColumnWidth"
+                            automation:AutomationProperties.Name="{x:Static resx:ResUI.menuProfileAutofitColumnWidth}"
+                            Classes="IconButton ToolGlass"
+                            ToolTip.Tip="{x:Static resx:ResUI.menuProfileAutofitColumnWidth}">
+                            <PathIcon Data="{StaticResource SemiIconExpand}" />
+                        </Button>
+                        <TextBox
+                            x:Name="txtServerFilter"
+                            Width="240"
+                            Height="32"
+                            VerticalContentAlignment="Center"
+                            PlaceholderText="{x:Static resx:ResUI.MsgServerTitle}"
+                            Text="{Binding ServerFilter, Mode=TwoWay}">
+                            <TextBox.InnerLeftContent>
+                                <PathIcon
+                                    Width="14"
+                                    Height="14"
+                                    Data="{StaticResource SemiIconSearchStroked}"
+                                    Foreground="{DynamicResource GlassTextSecondaryBrush}" />
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconGlobeStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock
+                                Classes="WindowTitle"
+                                Text="{x:Static resx:ResUI.TbSelectProfile}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Choose which server this action should use." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="{Binding ResultCount}" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Padding="14,12"
+                BorderBrush="{DynamicResource GlassHairlineBrush}"
+                BorderThickness="0,1,0,0"
+                DockPanel.Dock="Bottom">
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <Button
+                        x:Name="btnCancel"
+                        MinWidth="104"
+                        Classes="Soft"
+                        Content="{x:Static resx:ResUI.TbCancel}"
+                        IsCancel="True" />
+                    <Button
+                        x:Name="btnSave"
+                        MinWidth="104"
+                        Classes="Primary"
+                        Content="{x:Static resx:ResUI.TbConfirm}"
+                        IsDefault="True" />
+                </StackPanel>
+            </Border>
+
+            <DockPanel>
+                <ListBox
+                    x:Name="lstGroup"
+                    Margin="14,10,14,4"
+                    Classes="ChipFilter"
+                    DisplayMemberBinding="{Binding Remarks}"
+                    DockPanel.Dock="Top"
+                    ItemsSource="{Binding SubItems}" />
+
+                <Border
+                    Margin="14,8,14,14"
+                    Padding="2,6,2,2"
+                    Classes="GlassInset"
+                    ClipToBounds="True"
+                    CornerRadius="12">
+                    <Grid>
+                    <DataGrid
+                        x:Name="lstProfiles"
+                        AutoGenerateColumns="False"
+                        BorderThickness="0"
+                        CanUserReorderColumns="True"
+                        CanUserResizeColumns="True"
+                        GridLinesVisibility="Horizontal"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding ProfileItems}"
+                        RowHeight="40"
+                        SelectionMode="Single">
+                        <DataGrid.KeyBindings>
+                            <KeyBinding Command="{Binding SelectFinish}" Gesture="Enter" />
+                        </DataGrid.KeyBindings>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding ConfigType}"
+                                Header="{x:Static resx:ResUI.LvServiceType}"
+                                Tag="ConfigType" />
+                            <DataGridTextColumn
+                                Width="1.6*"
+                                MinWidth="110"
+                                Binding="{Binding Remarks}"
+                                Header="{x:Static resx:ResUI.LvRemarks}"
+                                Tag="Remarks" />
+                            <DataGridTextColumn
+                                Width="1.35*"
+                                MinWidth="130"
+                                Binding="{Binding Address}"
+                                Header="{x:Static resx:ResUI.LvAddress}"
+                                Tag="Address" />
+                            <DataGridTextColumn
+                                Width="66"
+                                Binding="{Binding Port}"
+                                Header="{x:Static resx:ResUI.LvPort}"
+                                Tag="Port" />
+                            <DataGridTextColumn
+                                Width="84"
+                                Binding="{Binding Network}"
+                                Header="{x:Static resx:ResUI.LvTransportProtocol}"
+                                Tag="Network" />
+                            <DataGridTextColumn
+                                Width="60"
+                                Binding="{Binding StreamSecurity}"
+                                Header="{x:Static resx:ResUI.LvTLS}"
+                                Tag="StreamSecurity" />
+                            <DataGridTextColumn
+                                Width="84"
+                                Binding="{Binding SubRemarks}"
+                                Header="{x:Static resx:ResUI.LvSubscription}"
+                                Tag="SubRemarks" />
+                            <DataGridTemplateColumn
+                                Width="78"
+                                SortMemberPath="Delay"
+                                Tag="Delay">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="{x:Static resx:ResUI.LvTestDelay}" />
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            Margin="{StaticResource MarginLr8}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Foreground="{Binding Delay, Converter={StaticResource DelayColorConverter}}"
+                                            Text="{Binding Path=DelayVal, Converter={StaticResource DelayTextConverter}, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn
+                                Width="108"
+                                Binding="{Binding SpeedVal}"
+                                Header="{x:Static resx:ResUI.LvTestSpeed}"
+                                Tag="Speed" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            IsHitTestVisible="False"
+                            IsVisible="{Binding BlIsEmpty}"
+                            Spacing="4">
+                            <Path
+                                Width="52"
+                                Height="24"
+                                Margin="0,0,0,6"
+                                HorizontalAlignment="Center"
+                                Data="{StaticResource ArONMarkGeometry}"
+                                Fill="{DynamicResource GlassThemeIconBrush}"
+                                Opacity="0.55"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                Text="No servers match" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="11.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Try a different search or group." />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </DockPanel>
+        </DockPanel>
+    </Border>
+</Window>

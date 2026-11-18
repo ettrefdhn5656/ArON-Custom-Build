@@ -1,0 +1,400 @@
+<Window
+    x:Class="v2rayN.Desktop.Views.FullConfigTemplateWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:v2rayN.Desktop.DesignData"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
+    xmlns:views="clr-namespace:v2rayN.Desktop.Views"
+    xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
+    Title="{x:Static resx:ResUI.menuFullConfigTemplate}"
+    Width="1120"
+    Height="760"
+    MinWidth="900"
+    MinHeight="620"
+    x:DataType="vms:FullConfigTemplateViewModel"
+    Design.DataContext="{x:Static dd:DesignData.FullConfigTemplate}"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Border
+        Margin="12"
+        Classes="WindowShell"
+        ClipToBounds="True">
+        <DockPanel>
+            <Border Classes="DialogHeader" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button
+                        x:Name="btnCloseHeader"
+                        VerticalAlignment="Center"
+                        Classes="IconButton ToolGlass"
+                        DockPanel.Dock="Right"
+                        ToolTip.Tip="Close">
+                        <PathIcon Data="{StaticResource SemiIconClose}" />
+                    </Button>
+
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource SemiIconSettingStroked}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="WindowTitle" Text="{x:Static resx:ResUI.menuFullConfigTemplate}" />
+                            <TextBlock
+                                FontSize="10.5"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Take full control of the generated core configuration." />
+                        </StackPanel>
+                        <Border Classes="CountPill" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="10.5"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                Text="Advanced" />
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border
+                Margin="14,10,14,14"
+                Padding="14,8"
+                Classes="GlassInset"
+                DockPanel.Dock="Bottom">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <PathIcon
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Data="{StaticResource SemiIconInfoCircle}"
+                            Foreground="{DynamicResource GlassThemeIconBrush}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="PageSubtitle"
+                            Text="Templates apply the next time the core starts." />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="btnCancel"
+                            Width="104"
+                            Classes="Soft"
+                            Content="{x:Static resx:ResUI.TbCancel}"
+                            IsCancel="True" />
+                        <Button
+                            x:Name="btnSave"
+                            Width="132"
+                            Classes="Primary"
+                            Content="Save template"
+                            IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <TabControl
+                x:Name="tabsFullConfig"
+                HorizontalContentAlignment="Stretch"
+                Classes="GlassTabs">
+                <TabItem Header="{x:Static resx:ResUI.TbRayFullConfigTemplate}">
+                    <DockPanel Margin="10,6,10,4">
+                        <Border Classes="FormCard" DockPanel.Dock="Top">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="SectionLabel" Text="XRAY TEMPLATE" />
+                                    <TextBlock
+                                        MaxWidth="720"
+                                        Classes="PageSubtitle"
+                                        Text="{x:Static resx:ResUI.TbFullConfigTemplateDesc}"
+                                        TextWrapping="Wrap" />
+                                    <HyperlinkButton
+                                        Padding="0"
+                                        HorizontalAlignment="Left"
+                                        Classes="WithIcon"
+                                        Click="linkFullConfigTemplateDoc_Click">
+                                        <TextBlock FontSize="11" Text="{x:Static resx:ResUI.TbRayFullConfigTemplateDesc}" />
+                                    </HyperlinkButton>
+                                </StackPanel>
+                                <StackPanel
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldLabel"
+                                        Text="{x:Static resx:ResUI.TbFullConfigTemplateEnable}" />
+                                    <ToggleSwitch
+                                        x:Name="rayFullConfigTemplateEnable"
+                                        HorizontalAlignment="Left" />
+                                </StackPanel>
+
+                                <Grid
+                                    Grid.Row="1"
+                                    Grid.ColumnSpan="2"
+                                    Margin="0,12,0,0"
+                                    ColumnDefinitions="Auto,*,Auto"
+                                    RowDefinitions="Auto">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldLabel"
+                                        Text="{x:Static resx:ResUI.TbAddProxyProtocolOutboundOnly}" />
+                                    <ToggleSwitch
+                                        x:Name="togAddProxyProtocolOutboundOnly4Ray"
+                                        Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        HorizontalAlignment="Left" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSetUpstreamProxyDetour}" />
+                                        <TextBox
+                                            x:Name="txtProxyDetour4Ray"
+                                            Width="200"
+                                            PlaceholderText="proxy" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Grid Margin="4,8,4,0" ColumnDefinitions="*,10,*">
+                            <Border
+                                Grid.Column="0"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                ClipToBounds="True"
+                                CornerRadius="12">
+                                <DockPanel>
+                                    <Border
+                                        Padding="12,8"
+                                        Background="{DynamicResource GlassInsetBrush}"
+                                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        DockPanel.Dock="Top">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock
+                                                FontSize="11"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                                Text="xray config template" />
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Text="json" />
+                                            <TextBlock
+                                                Margin="12,0,0,0"
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Opacity="0.75"
+                                                Text="Leave empty to auto-generate" />
+                                        </StackPanel>
+                                    </Border>
+                                    <views:JsonEditor x:Name="rayFullConfigTemplate" VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+
+                            <GridSplitter
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                Background="Transparent" />
+
+                            <Border
+                                Grid.Column="2"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                ClipToBounds="True"
+                                CornerRadius="12">
+                                <DockPanel>
+                                    <Border
+                                        Padding="12,8"
+                                        Background="{DynamicResource GlassInsetBrush}"
+                                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        DockPanel.Dock="Top">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock
+                                                FontSize="11"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                                Text="xray tun config template" />
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Text="json" />
+                                            <TextBlock
+                                                Margin="12,0,0,0"
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Opacity="0.75"
+                                                Text="Leave empty to auto-generate" />
+                                        </StackPanel>
+                                    </Border>
+                                    <views:JsonEditor x:Name="rayFullTunConfigTemplate" VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </DockPanel>
+                </TabItem>
+
+                <TabItem Header="{x:Static resx:ResUI.TbSBFullConfigTemplate}">
+                    <DockPanel Margin="10,6,10,4">
+                        <Border Classes="FormCard" DockPanel.Dock="Top">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Classes="SectionLabel" Text="SING-BOX TEMPLATE" />
+                                    <TextBlock
+                                        MaxWidth="720"
+                                        Classes="PageSubtitle"
+                                        Text="{x:Static resx:ResUI.TbFullConfigTemplateDesc}"
+                                        TextWrapping="Wrap" />
+                                    <HyperlinkButton
+                                        Padding="0"
+                                        HorizontalAlignment="Left"
+                                        Classes="WithIcon"
+                                        Click="linkFullConfigTemplateDoc_Click">
+                                        <TextBlock FontSize="11" Text="{x:Static resx:ResUI.TbSBFullConfigTemplateDesc}" />
+                                    </HyperlinkButton>
+                                </StackPanel>
+                                <StackPanel
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldLabel"
+                                        Text="{x:Static resx:ResUI.TbFullConfigTemplateEnable}" />
+                                    <ToggleSwitch
+                                        x:Name="sbFullConfigTemplateEnable"
+                                        HorizontalAlignment="Left" />
+                                </StackPanel>
+
+                                <Grid
+                                    Grid.Row="1"
+                                    Grid.ColumnSpan="2"
+                                    Margin="0,12,0,0"
+                                    ColumnDefinitions="Auto,*,Auto"
+                                    RowDefinitions="Auto">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="FieldLabel"
+                                        Text="{x:Static resx:ResUI.TbAddProxyProtocolOutboundOnly}" />
+                                    <ToggleSwitch
+                                        x:Name="togAddProxyProtocolOutboundOnly4Singbox"
+                                        Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        HorizontalAlignment="Left" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            Classes="FieldLabel"
+                                            Text="{x:Static resx:ResUI.TbSetUpstreamProxyDetour}" />
+                                        <TextBox
+                                            x:Name="txtProxyDetour4Singbox"
+                                            Width="200"
+                                            PlaceholderText="proxy" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Grid Margin="4,8,4,0" ColumnDefinitions="*,10,*">
+                            <Border
+                                Grid.Column="0"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                ClipToBounds="True"
+                                CornerRadius="12">
+                                <DockPanel>
+                                    <Border
+                                        Padding="12,8"
+                                        Background="{DynamicResource GlassInsetBrush}"
+                                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        DockPanel.Dock="Top">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock
+                                                FontSize="11"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                                Text="sing-box config template" />
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Text="json" />
+                                            <TextBlock
+                                                Margin="12,0,0,0"
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Opacity="0.75"
+                                                Text="Leave empty to auto-generate" />
+                                        </StackPanel>
+                                    </Border>
+                                    <views:JsonEditor x:Name="sbFullConfigTemplate" VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+
+                            <GridSplitter
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                Background="Transparent" />
+
+                            <Border
+                                Grid.Column="2"
+                                BorderBrush="{DynamicResource GlassBorderBrush}"
+                                BorderThickness="1"
+                                ClipToBounds="True"
+                                CornerRadius="12">
+                                <DockPanel>
+                                    <Border
+                                        Padding="12,8"
+                                        Background="{DynamicResource GlassInsetBrush}"
+                                        BorderBrush="{DynamicResource GlassHairlineBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        DockPanel.Dock="Top">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock
+                                                FontSize="11"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource GlassTextPrimaryBrush}"
+                                                Text="sing-box tun config template" />
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Text="json" />
+                                            <TextBlock
+                                                Margin="12,0,0,0"
+                                                FontSize="10"
+                                                Foreground="{DynamicResource GlassTextSecondaryBrush}"
+                                                Opacity="0.75"
+                                                Text="Leave empty to auto-generate" />
+                                        </StackPanel>
+                                    </Border>
+                                    <views:JsonEditor x:Name="sbFullTunConfigTemplate" VerticalAlignment="Stretch" />
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </DockPanel>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Border>
+</Window>
