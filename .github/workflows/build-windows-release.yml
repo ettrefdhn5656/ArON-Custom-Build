@@ -1,0 +1,50 @@
+name: Build and Release Windows x64
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build and Publish Windows x64
+        shell: pwsh
+        run: |
+          $proj = Get-ChildItem -Path . -Recurse -Filter "v2rayN.Desktop.csproj" | Select-Object -First 1
+          if (-not $proj) {
+            $proj = Get-ChildItem -Path . -Recurse -Filter "*.csproj" | Where-Object { $_.Name -like "*v2rayN*" -or $_.Name -like "*ArON*" } | Select-Object -First 1
+          }
+          Write-Host "Target project: $($proj.FullName)"
+          dotnet publish $proj.FullName -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o ./publish_win64
+
+      - name: Compress Build Artifact
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ./publish_win64/* -DestinationPath ./ArON-windows-64.zip -Force
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-custom
+          name: "ArON Windows x64 Custom Build"
+          body: "Automated custom Windows x64 build of ArON."
+          draft: false
+          prerelease: false
+          files: ./ArON-windows-64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
