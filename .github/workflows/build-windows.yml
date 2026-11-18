@@ -1,41 +1,37 @@
-name: Build Windows x64
+name: Build ArON Windows
 
 on:
-  push:
-    branches: [ main, master ]
   workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: |
-          8.0.x
-          9.0.x
-          10.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore v2rayN/v2rayN.sln
 
-    - name: Build and Publish
-      shell: pwsh
-      run: |
-        $projects = Get-ChildItem -Recurse -Filter *.csproj | Where-Object { $_.FullName -notmatch "Test" }
-        foreach ($proj in $projects) {
-          Write-Host "Publishing $($proj.FullName)..."
-          dotnet publish $proj.FullName -c Release -r win-x64 --self-contained false -o "$env:RUNNER_TEMP/publish/$($proj.BaseName)" || true
-        }
+      - name: Build Windows x64
+        run: |
+          dotnet publish v2rayN/v2rayN/v2rayN.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o ./publish-win-x64
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ArON-Windows-x64
-        path: ${{ runner.temp }}/publish/
+      - name: Archive build artifacts
+        run: |
+          Compress-Archive -Path ./publish-win-x64/* -DestinationPath ./ArON-Windows-x64.zip
+
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArON-Windows-x64
+          path: ./ArON-Windows-x64.zip
