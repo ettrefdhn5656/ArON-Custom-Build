@@ -593,7 +593,7 @@ jobs:
           echo "NixOS FM Edition package: MehrON-FM-Edition-nixos-64.tar.gz ($(du -h MehrON-FM-Edition-nixos-64.tar.gz | cut -f1))"
 
       - name: Create or Update GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.TAG_NAME }}
